@@ -33,9 +33,10 @@ class NatronCompositor:
 
         if bloom:
             next_node = f"{curr}_bloomed"
+            # Operate in GBRP planar RGB space to preserve natural chrominance and prevent pink/magenta cast
             bloom_graph = (
-                f"[{curr}]split=2[{curr}_base][{curr}_glow_src];"
-                f"[{curr}_glow_src]gblur=sigma=18:steps=2,colorchannelmixer=aa=0.32[{curr}_glow];"
+                f"[{curr}]format=gbrp,split=2[{curr}_base][{curr}_glow_src];"
+                f"[{curr}_glow_src]gblur=sigma=14:steps=1,colorchannelmixer=rr=0.22:gg=0.22:bb=0.22[{curr}_glow];"
                 f"[{curr}_base][{curr}_glow]blend=all_mode=screen[{next_node}]"
             )
             graph_nodes.append(bloom_graph)
@@ -43,16 +44,20 @@ class NatronCompositor:
 
         filter_chain = []
         if chromatic_aberration:
-            filter_chain.append("rgbashift=rh=6:rv=2:bh=-6:bv=-2")
+            # Subtle optical edge chromatic aberration in RGB space
+            filter_chain.append("rgbashift=rh=2:bh=-2")
 
         if anamorphic_flare:
-            filter_chain.append("unsharp=luma_msize_x=7:luma_msize_y=7:luma_amount=1.5")
+            filter_chain.append("unsharp=luma_msize_x=7:luma_msize_y=7:luma_amount=1.2")
+
+        # Convert back to standard yuv420p for vignette and film grain
+        filter_chain.append("format=yuv420p")
 
         if vignette:
             filter_chain.append("vignette=PI/4.2")
 
         if film_grain:
-            filter_chain.append("noise=alls=7:allf=t+u")
+            filter_chain.append("noise=alls=6:allf=t+u")
 
         if filter_chain:
             next_node = output_label
@@ -61,6 +66,6 @@ class NatronCompositor:
             curr = next_node
         else:
             if curr != output_label:
-                graph_nodes.append(f"[{curr}]copy[{output_label}]")
+                graph_nodes.append(f"[{curr}]format=yuv420p[{output_label}]")
 
         return ";".join(graph_nodes)

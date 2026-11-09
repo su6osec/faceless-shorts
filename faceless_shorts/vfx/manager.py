@@ -63,13 +63,13 @@ class VFXManager:
                 duration=duration,
                 preset=preset
             )
-            # Blend particle overlay with base video
+            # Blend particle overlay with base video in GBRP planar RGB space (eliminates YUV pink chroma shift)
             blended_particles = os.path.join(self.work_dir, "vfx_p_blended.mp4")
             cmd = [
                 "ffmpeg", "-y",
                 "-i", current_video,
                 "-i", p_clip,
-                "-filter_complex", "[0:v][1:v]blend=all_mode=screen[outv]",
+                "-filter_complex", "[0:v]format=gbrp[b];[1:v]format=gbrp[p];[b][p]blend=all_mode=screen,format=yuv420p[outv]",
                 "-map", "[outv]",
                 "-c:v", "libx264",
                 "-preset", "ultrafast",
@@ -91,7 +91,7 @@ class VFXManager:
                 "ffmpeg", "-y",
                 "-i", current_video,
                 "-i", hud_clip,
-                "-filter_complex", "[0:v][1:v]blend=all_mode=screen[outv]",
+                "-filter_complex", "[0:v]format=gbrp[b];[1:v]format=gbrp[h];[b][h]blend=all_mode=screen,format=yuv420p[outv]",
                 "-map", "[outv]",
                 "-c:v", "libx264",
                 "-preset", "ultrafast",

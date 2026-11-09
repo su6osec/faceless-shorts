@@ -22,9 +22,9 @@ class ToonShader:
         high = "0.35" if edge_thickness == "thick" else "0.45"
 
         graph = (
-            f"[{input_label}]split=2[{input_label}_col][{input_label}_edge];"
-            f"[{input_label}_edge]edgedetect=low={low}:high={high}:mode=colormix,negate[{input_label}_ink];"
-            f"[{input_label}_col]eq=saturation=1.38:contrast=1.22:brightness=0.02,unsharp=5:5:1.5[{input_label}_vivid];"
-            f"[{input_label}_vivid][{input_label}_ink]blend=all_mode=multiply[{output_label}]"
+            f"[{input_label}]split=2[{input_label}_col_src][{input_label}_edge_src];"
+            f"[{input_label}_edge_src]edgedetect=low={low}:high={high}:mode=canny,negate,format=gbrp[{input_label}_ink];"
+            f"[{input_label}_col_src]eq=saturation=1.2:contrast=1.1,format=gbrp[{input_label}_vivid];"
+            f"[{input_label}_vivid][{input_label}_ink]blend=all_mode=multiply,format=yuv420p[{output_label}]"
         )
         return graph

@@ -21,11 +21,14 @@ class TestVFXSuite(unittest.TestCase):
         self.assertIn("rgbashift", fg)
         self.assertIn("gblur", fg)
         self.assertIn("blend", fg)
+        self.assertIn("format=gbrp", fg)
+        self.assertIn("format=yuv420p", fg)
 
     def test_toon_shader_filtergraph(self):
         fg = ToonShader.get_filtergraph("in_v", "out_v")
         self.assertIn("edgedetect", fg)
         self.assertIn("blend=all_mode=multiply", fg)
+        self.assertIn("format=gbrp", fg)
 
     def test_theatre_motion_expressions(self):
         z, x, y = get_theatre_motion_expr("theatre_spring_zoom", 90)

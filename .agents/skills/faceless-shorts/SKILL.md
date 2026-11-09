@@ -61,7 +61,12 @@ When the user requests a short video (e.g., *"Make a fitness short about buildin
   * `--art-style cinematic_noir` (Moody chiaroscuro)
   * `--art-style hyperreal` (Cinematic 8k photorealistic)
 
-### Step 3: Execute the Python Engine
+### Step 3: Visual Generation Options
+* **Option A (Autonomous Agent / Nano Banana)**: In Antigravity or Gemini, invoke the built-in `image-generator` subagent (Nano Banana) for each scene prompt to create custom 9:16 high-res visuals in `images/<niche>/`, then pass `--images-dir images/<niche>`.
+* **Option B (Pollinations AI Free REST)**: The engine automatically queries Pollinations Flux/SDXL for 100% zero-cost keyless generation.
+* **Option C (Custom User Images)**: Place pre-made images (`scene_01.jpg`, `scene_02.jpg`, etc.) into `images/<niche>/` or pass `--images-dir`.
+
+### Step 4: Execute the Python Engine
 
 #### Example 1: Generate Fitness Short (Hormozi style)
 ```bash

@@ -96,6 +96,7 @@ class VideoRenderer:
         script: VideoScript,
         output_mp4_path: str,
         custom_bg_music: Optional[str] = None,
+        custom_images_dir: Optional[str] = None,
         enable_ai_images: bool = True
     ) -> str:
         """
@@ -137,7 +138,37 @@ class VideoRenderer:
             img_path = os.path.join(self.work_dir, f"image_scene_{i+1:02d}.jpg")
             clip_path = os.path.join(self.work_dir, f"clip_scene_{i+1:02d}.mp4")
 
-            if enable_ai_images:
+            # Check if custom image exists (e.g. from Nano Banana or user folder)
+            custom_candidate = None
+            if custom_images_dir and os.path.exists(custom_images_dir):
+                for ext in [".jpg", ".png", ".jpeg", ".webp"]:
+                    c1 = os.path.join(custom_images_dir, f"scene_{i+1:02d}{ext}")
+                    c2 = os.path.join(custom_images_dir, f"scene_{i+1}{ext}")
+                    if os.path.exists(c1):
+                        custom_candidate = c1
+                        break
+                    elif os.path.exists(c2):
+                        custom_candidate = c2
+                        break
+
+            # Also check default workspace images/<niche>/
+            if not custom_candidate:
+                default_niche_dir = os.path.join("images", script.niche)
+                if os.path.exists(default_niche_dir):
+                    for ext in [".jpg", ".png", ".jpeg", ".webp"]:
+                        c1 = os.path.join(default_niche_dir, f"scene_{i+1:02d}{ext}")
+                        c2 = os.path.join(default_niche_dir, f"scene_{i+1}{ext}")
+                        if os.path.exists(c1):
+                            custom_candidate = c1
+                            break
+                        elif os.path.exists(c2):
+                            custom_candidate = c2
+                            break
+
+            if custom_candidate:
+                print(f"    → Scene {i+1}: Using high-res custom visual from {custom_candidate}...")
+                shutil.copy(custom_candidate, img_path)
+            elif enable_ai_images:
                 print(f"    → Scene {i+1}: Generating visual ('{scene.visual_prompt[:40]}...')...")
                 self.visuals.generate_ai_image(prompt=scene.visual_prompt, output_path=img_path)
             else:

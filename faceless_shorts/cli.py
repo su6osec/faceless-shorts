@@ -154,6 +154,7 @@ def run_generate(args):
     rendered_file = renderer.render(
         script=script,
         output_mp4_path=output_path,
+        custom_images_dir=args.images_dir,
         enable_ai_images=not args.offline
     )
 
@@ -192,6 +193,7 @@ def main():
     gen_parser.add_argument("-r", "--rate", type=str, default="+5%", help="Speech rate adjustment (e.g. '+5%%', '+10%%')")
     gen_parser.add_argument("-o", "--output", type=str, help="Output MP4 file path")
     gen_parser.add_argument("--script-json", type=str, help="Path to custom JSON script file")
+    gen_parser.add_argument("--images-dir", type=str, help="Path to folder containing scene_01.jpg, scene_02.jpg, etc.")
     gen_parser.add_argument("--save-preset", action="store_true", help="Save the generated script as a reusable preset JSON file")
     gen_parser.add_argument("--offline", action="store_true", help="Run offline without downloading AI images")
 

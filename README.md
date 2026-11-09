@@ -1,5 +1,30 @@
 # ⚡ Faceless Shorts: AI-Powered Faceless Video Generator for Shorts, Reels & TikTok
 
+<!-- SEO Meta Tags -->
+<meta name="title" content="Faceless Shorts - Zero-Cost AI Faceless Video Generator for YouTube Shorts, Instagram Reels & TikTok" />
+<meta name="description" content="Generate viral faceless short-form videos with 45 art styles, 17 transitions, 13 subtitles and 15+ post-FX. 100% free, no API keys, no subscriptions. Python FFmpeg automation tool." />
+<meta name="keywords" content="youtube-shorts, tiktok, instagram-reels, faceless video, ai video generator, python-ffmpeg, shorts automation, viral content, python video tool, zero cost, open source" />
+<meta name="author" content="su6osec" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://github.com/su6osec/faceless-shorts" />
+<meta property="og:title" content="Faceless Shorts - Zero-Cost AI Faceless Video Generator" />
+<meta property="og:description" content="Generate viral faceless short-form videos with 45 art styles, 17 transitions, 13 subtitles and 15+ post-FX. 100% free, no API keys, no subscriptions." />
+<meta property="og:image" content="https://img.shields.io/badge/Cost-%240.00%20Completely%20Free-brightgreen?style=for-the-badge" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://github.com/su6osec/faceless-shorts" />
+<meta property="twitter:title" content="Faceless Shorts - Zero-Cost AI Video Generator" />
+<meta property="twitter:description" content="Generate viral faceless short-form videos with 45 art styles, 17 transitions, 13 subtitles and 15+ post-FX. 100% free, no API keys, no subscriptions." />
+<meta property="twitter:image" content="https://img.shields.io/badge/YouTube%20Shorts%20%7C%20Reels%20%7C%20TikTok-red?style=for-the-badge" />
+
+<!-- External URLs for nofollow for analytics tracking reasons -->
+<a rel="nofollow" href="https://github.com/su6osec/faceless-shorts"></a>
+<a rel="nofollow" href="https://www.python.org/"></a>
+<a rel="nofollow" href="https://www.ffmpeg.org/"></a>
+
 [![Cost](https://img.shields.io/badge/Cost-%240.00%20Completely%20Free-brightgreen?style=for-the-badge&logo=cashapp)](https://github.com/su6osec/faceless-shorts)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=for-the-badge&logo=python)](https://www.python.org/)
 [![Resolution](https://img.shields.io/badge/Resolution-1080x1920%20(9:16)-orange?style=for-the-badge)](https://github.com/su6osec/faceless-shorts)

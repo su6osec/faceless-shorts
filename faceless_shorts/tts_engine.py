@@ -49,7 +49,7 @@ class TTSEngine:
         text: str,
         voice: str,
         output_path: str,
-        rate: str = "+5%",
+        rate: str = "+0%",
         volume: str = "+0%",
         pitch: str = "+0Hz"
     ) -> AudioResult:
@@ -58,6 +58,12 @@ class TTSEngine:
         
         # Strip markdown or special characters that confuse TTS
         cleaned_text = re.sub(r"[\*\_#\[\]\(\)]", "", text).strip()
+        
+        # For Hindi / Indic languages: normalize '।' and '?' to ',' so Edge-TTS neural voices
+        # flow smoothly and continuously like a real human without inserting 1.2s dead stops
+        if "hi-" in voice or any("\u0900" <= c <= "\u097F" for c in cleaned_text):
+            cleaned_text = re.sub(r"[।\?]+", ", ", cleaned_text)
+            cleaned_text = re.sub(r",\s*,+", ", ", cleaned_text)
         
         communicate = edge_tts.Communicate(
             text=cleaned_text,
@@ -108,7 +114,7 @@ class TTSEngine:
         text: str,
         output_path: str,
         voice: Optional[str] = None,
-        rate: str = "+5%"
+        rate: str = "+0%"
     ) -> AudioResult:
         """Synchronous wrapper for speech synthesis."""
         selected_voice = self._resolve_voice(voice or self.default_voice)

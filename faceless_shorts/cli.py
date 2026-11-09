@@ -191,7 +191,7 @@ def run_generate(args):
         f"[bold white]Retention Progress Bar:[/bold white] [cyan]{progress_bar_state}[/cyan]\n"
         f"[bold white]Subtitle Style:[/bold white] {args.style}\n"
         f"[bold white]Art & Editing Style:[/bold white] [magenta]{args.art_style}[/magenta]\n"
-        f"[bold white]Audio Preset:[/bold white] {args.music} (Sub-bass ducked, -14 LUFS)\n"
+        f"[bold white]Audio:[/bold white] {'Clean Studio Voice (Zero Background Sound)' if (not args.music or args.music == 'none') else f'{args.music} (Ducked, -14 LUFS)'}\n"
         f"[bold white]AI Visuals:[/bold white] {'Disabled (Offline Procedural)' if args.offline else 'Enabled (Pollinations Flux)'}",
         title="🎬 Production Brief",
         border_style="green"
@@ -251,8 +251,8 @@ def main():
     gen_parser.add_argument("-tr", "--transition", type=str, default="flash", choices=list(TRANSITIONS.keys()), help="Scene transition (flash, crossfade, slide, wipe, cut)")
     gen_parser.add_argument("-s", "--style", type=str, default="hormozi", choices=list(SUBTITLE_STYLES.keys()), help="Subtitle style (hormozi, beast_pop, neon_cyberpunk, crimson_alert, sketch_comic, minimalist_gold)")
     gen_parser.add_argument("-a", "--art-style", type=str, default="hyperreal", choices=list(ART_STYLES.keys()), help="Visual editing style (hyperreal, sketch, old_style, paper_craft, cyberpunk_glitch, cinematic_noir)")
-    gen_parser.add_argument("-m", "--music", type=str, default="dark_tension", choices=["dark_tension", "curiosity_ambient", "cinematic_pulse", "sub_bass_808"], help="Background music preset")
-    gen_parser.add_argument("-r", "--rate", type=str, default="+5%", help="Speech rate adjustment (e.g. '+5%%', '+10%%')")
+    gen_parser.add_argument("-m", "--music", type=str, default="none", choices=["none", "dark_tension", "curiosity_ambient", "cinematic_pulse", "sub_bass_808"], help="Background music preset (default: 'none' for pristine clean voiceover with zero background sound)")
+    gen_parser.add_argument("-r", "--rate", type=str, default="+0%", help="Speech rate adjustment (default: '+0%%' for natural human cadence)")
     gen_parser.add_argument("-o", "--output", type=str, help="Output MP4 file path")
     gen_parser.add_argument("--script-json", type=str, help="Path to custom JSON script file")
     gen_parser.add_argument("--images-dir", type=str, help="Path to folder containing scene_01.jpg, scene_02.jpg, etc.")

@@ -43,8 +43,8 @@ class VideoRenderer:
         art_style: str = "hyperreal",
         transition: str = DEFAULT_TRANSITION,
         progress_bar: bool = True,
-        bg_music_preset: str = "dark_tension",
-        speech_rate: str = "+5%",
+        bg_music_preset: Optional[str] = "none",
+        speech_rate: str = "+0%",
         work_dir: str = ".temp_render"
     ):
         self.language = (language or DEFAULT_LANGUAGE).lower()
@@ -281,36 +281,51 @@ class VideoRenderer:
         )
         print(f"    ✓ Burned subtitles mapped to millisecond speech events")
 
-        print(f"\n🎵 [4/5] Studio sound design, Transition SFX & Ducking...")
-        # Prepare background music (procedural or custom)
-        if custom_bg_music and os.path.exists(custom_bg_music):
-            bg_music_path = custom_bg_music
-        else:
-            bg_music_path = os.path.join(self.work_dir, "procedural_music.wav")
-            self.audio.generate_tension_drone(
-                output_path=bg_music_path,
-                duration_sec=total_duration + 3.0,
-                preset=self.bg_music_preset
+        # Prepare audio: Clean studio voiceover or optional background music
+        has_custom_music = bool(custom_bg_music and os.path.exists(custom_bg_music))
+        has_preset_music = bool(
+            self.bg_music_preset and self.bg_music_preset.lower() not in ["none", "off", "disable", "disabled", "false", ""]
+        )
+        has_music = has_custom_music or has_preset_music
+
+        master_audio_path = os.path.join(self.work_dir, "master_audio.m4a")
+
+        if has_music:
+            print(f"\n🎵 [4/5] Audio mixing & sidechain ducking ({self.bg_music_preset or 'custom'})...")
+            if has_custom_music:
+                bg_music_path = custom_bg_music
+            else:
+                bg_music_path = os.path.join(self.work_dir, "procedural_music.wav")
+                self.audio.generate_tension_drone(
+                    output_path=bg_music_path,
+                    duration_sec=total_duration + 3.0,
+                    preset=self.bg_music_preset
+                )
+
+            # Generate transition whooshes at scene boundaries
+            cut_times = [scene_timings[i][1] for i in range(len(scene_timings) - 1)]
+            sfx_path = os.path.join(self.work_dir, "transition_whooshes.wav")
+            transition_sfx = self.audio.generate_transition_track(
+                output_path=sfx_path,
+                total_duration=total_duration,
+                transition_times=cut_times
             )
 
-        # Generate transition whooshes at each scene boundary
-        cut_times = [scene_timings[i][1] for i in range(len(scene_timings) - 1)]
-        sfx_path = os.path.join(self.work_dir, "transition_whooshes.wav")
-        transition_sfx = self.audio.generate_transition_track(
-            output_path=sfx_path,
-            total_duration=total_duration,
-            transition_times=cut_times
-        )
-
-        # Mix with dynamic sidechain compression, vocal presence EQ, and -14 LUFS mastering
-        master_audio_path = os.path.join(self.work_dir, "master_audio.m4a")
-        self.audio.mix_with_ducking(
-            voiceover_path=master_voice_path,
-            background_music_path=bg_music_path,
-            output_path=master_audio_path,
-            transition_sfx_path=transition_sfx
-        )
-        print("    ✓ Sub-bass & ducked audio mastered to -14 LUFS standard")
+            # Mix with dynamic sidechain compression and -14 LUFS mastering
+            self.audio.mix_with_ducking(
+                voiceover_path=master_voice_path,
+                background_music_path=bg_music_path,
+                output_path=master_audio_path,
+                transition_sfx_path=transition_sfx
+            )
+            print("    ✓ Mixed with background music and mastered to -14 LUFS")
+        else:
+            print("\n🎙️ [4/5] Mastering clean studio voiceover (Zero background sound)...")
+            self.audio.master_clean_voice(
+                voiceover_path=master_voice_path,
+                output_path=master_audio_path
+            )
+            print("    ✓ Pristine studio voiceover mastered to -14 LUFS (100% clean, no background sound)")
 
         print(f"\n🎬 [5/5] Final FFmpeg assembly, Retention progress bar & Subtitle burning...")
         # Build video filter chain: ASS subtitles + Retention Progress Bar

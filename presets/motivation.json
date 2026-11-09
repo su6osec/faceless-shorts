@@ -1,0 +1,47 @@
+{
+  "title": "Monk Mode Will Change Your Life In 90 Days",
+  "niche": "motivation",
+  "target_duration": 42,
+  "hook": "If you want to become unrecognizable in six months, you must disappear for ninety days.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "If you want to become unrecognizable in six months, you must disappear for ninety days.",
+      "visual_prompt": "solitary silhouette of a man meditating on foggy mountain peak at dawn, golden sunrise rim light",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "Cut out cheap dopamine, toxic friendships, and endless mindless scrolling.",
+      "visual_prompt": "shattered glowing smartphone screen lying on dark cold stone pavement, sparks and smoke",
+      "motion": "dramatic_zoom_out"
+    },
+    {
+      "index": 3,
+      "text": "When you isolate yourself to master one high-income skill and train your body daily, magic happens.",
+      "visual_prompt": "intense scholar writing notes in ancient candlelit library surrounded by towering bookshelves",
+      "motion": "pan_left"
+    },
+    {
+      "index": 4,
+      "text": "People will wonder where you went, but you will re-emerge with unshakeable confidence and focus.",
+      "visual_prompt": "sharp dressed confident man walking out of shadowy dark corridor into bright modern daylight",
+      "motion": "pan_right"
+    },
+    {
+      "index": 5,
+      "text": "Are you willing to sacrifice short-term comfort for lifelong freedom? Comment YES if you are locked in.",
+      "visual_prompt": "majestic lion looking straight into camera with fierce golden eyes, hyperrealistic cinematic portrait",
+      "motion": "punch_zoom_in"
+    }
+  ],
+  "cta": "Comment YES if you are locked in.",
+  "tags": [
+    "#motivation",
+    "#monkmode",
+    "#selfimprovement",
+    "#discipline",
+    "#success",
+    "#shorts"
+  ]
+}

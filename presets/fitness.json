@@ -1,0 +1,47 @@
+{
+  "title": "Stop Lifting Weights Like An Amateur",
+  "niche": "fitness",
+  "target_duration": 45,
+  "hook": "Stop lifting weights like an amateur if you want real muscle growth.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "Stop lifting weights like an amateur if you want real muscle growth.",
+      "visual_prompt": "intense muscular athlete chalking hands before a heavy deadlift, dark gritty gym, cinematic volumetric rim lighting",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "Most people fail because they change their workout routine every single week chasing soreness.",
+      "visual_prompt": "stacks of rusted heavy iron dumbbell plates in dimly lit underground weight room, dramatic shadows",
+      "motion": "dramatic_zoom_out"
+    },
+    {
+      "index": 3,
+      "text": "Your muscles do not care about variety. They respond strictly to mechanical tension and progressive overload.",
+      "visual_prompt": "anatomical muscular human physique glowing with red electric power and energy, hyperrealistic medical 3d render",
+      "motion": "pan_left"
+    },
+    {
+      "index": 4,
+      "text": "Pick three compound movements, master perfect form, and force your body to lift heavier every single month.",
+      "visual_prompt": "loaded heavy Olympic barbell bending under extreme weight on squat rack, spotlight reflection",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 5,
+      "text": "Discipline will build ten times more muscle than temporary motivation ever could. What is your current bench press?",
+      "visual_prompt": "lone disciplined warrior standing in pouring rain, calm focused facial expression, cinematic epic shot",
+      "motion": "pan_right"
+    }
+  ],
+  "cta": "What is your current bench press? Comment below.",
+  "tags": [
+    "#fitness",
+    "#gymmotivation",
+    "#workouttips",
+    "#bodybuilding",
+    "#discipline",
+    "#shorts"
+  ]
+}

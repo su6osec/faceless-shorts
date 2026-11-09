@@ -33,8 +33,8 @@ class TestSubtitles(unittest.TestCase):
         self.assertIn("[V4+ Styles]", content)
         self.assertIn("Style: Main", content)
         self.assertIn("BRAIN", content)
-        # Check emoji insertion for 'brain'
-        self.assertIn("🧠", content)
+        # Check scale bounce popping tag
+        self.assertIn("\\fscx118\\fscy118", content)
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,15 +1,20 @@
 """
 Master Video Rendering Engine for Faceless Shorts.
-Orchestrates TTS, Visual AI, Ken Burns motion synthesis, ASS subtitle burning,
-and sidechain audio mixing into publication-ready 1080x1920 MP4 shorts.
+Features:
+- Continuous Stream Voice Synthesis (Zero MP3 Concatenation Desync)
+- Frame-Accurate Speech, Visual Cut & Subtitle Synchronization
+- Punchy Ken Burns Dynamic Motion (Punch Zoom In, Zoom Out, Tracking Pans)
+- Artistic Video Style Post-Processing (Sketch, Vintage 35mm, Papercraft, Cyberpunk)
+- ASS Karaoke Subtitles with Dynamic 118% Word Bounce Popping
+- Automated Dynamic Audio Ducking with FFmpeg Sidechain Compression
 """
 
 import os
 import shutil
 import subprocess
 import time
-from typing import Dict, List, Optional
-from faceless_shorts.config import CANVAS_WIDTH, CANVAS_HEIGHT, DEFAULT_FPS
+from typing import Dict, List, Optional, Tuple
+from faceless_shorts.config import CANVAS_WIDTH, CANVAS_HEIGHT, DEFAULT_FPS, ART_STYLES
 from faceless_shorts.script_generator import VideoScript
 from faceless_shorts.tts_engine import TTSEngine, WordTimestamp
 from faceless_shorts.visuals import VisualManager
@@ -21,19 +26,70 @@ class VideoRenderer:
         self,
         voice: str = "christopher",
         subtitle_style: str = "hormozi",
+        art_style: str = "hyperreal",
         bg_music_preset: str = "dark_tension",
         speech_rate: str = "+5%",
         work_dir: str = ".temp_render"
     ):
         self.tts = TTSEngine(default_voice=voice)
-        self.visuals = VisualManager(cache_dir=os.path.join(work_dir, "cache"))
+        self.visuals = VisualManager(cache_dir=os.path.join(work_dir, "cache"), art_style=art_style)
         self.subtitles = SubtitleGenerator(style_name=subtitle_style)
         self.audio = SoundEngine()
         self.voice = voice
         self.subtitle_style = subtitle_style
+        self.art_style = art_style
         self.bg_music_preset = bg_music_preset
         self.speech_rate = speech_rate
         self.work_dir = work_dir
+
+    def _map_words_to_scenes(
+        self,
+        scenes: List,
+        all_words: List[WordTimestamp],
+        total_duration: float
+    ) -> List[Tuple[float, float, float]]:
+        """
+        Map continuous word stream to individual scenes to establish exact
+        start, end, and duration boundaries for each visual clip.
+        Returns list of (start_time, end_time, duration).
+        """
+        scene_boundaries = []
+        word_cursor = 0
+        total_words_count = len(all_words)
+
+        for i, scene in enumerate(scenes):
+            scene_word_tokens = scene.text.split()
+            count = len(scene_word_tokens)
+            
+            # Words for this scene
+            scene_words = all_words[word_cursor : min(word_cursor + count, total_words_count)]
+            word_cursor += count
+
+            if i == 0:
+                scene_start = 0.0
+            else:
+                scene_start = scene_boundaries[-1][1]
+
+            if i == len(scenes) - 1:
+                scene_end = total_duration
+            else:
+                # Find start of next scene's first word or extend past current scene's last word
+                next_word_idx = word_cursor
+                if next_word_idx < total_words_count:
+                    scene_end = all_words[next_word_idx].start_sec
+                elif scene_words:
+                    scene_end = scene_words[-1].end_sec + 0.3
+                else:
+                    scene_end = scene_start + 5.0
+
+            # Ensure minimum duration
+            if scene_end <= scene_start:
+                scene_end = scene_start + 4.0
+
+            duration = scene_end - scene_start
+            scene_boundaries.append((scene_start, scene_end, duration))
+
+        return scene_boundaries
 
     def render(
         self,
@@ -49,84 +105,63 @@ class VideoRenderer:
         start_time = time.time()
         os.makedirs(self.work_dir, exist_ok=True)
         os.makedirs(os.path.dirname(os.path.abspath(output_mp4_path)), exist_ok=True)
-        
-        print(f"\n🚀 [1/5] Synthesizing speech for {len(script.scenes)} scenes...")
-        scene_audio_files = []
-        all_words: List[WordTimestamp] = []
-        scene_durations = []
-        cumulative_offset = 0.0
 
-        for i, scene in enumerate(script.scenes):
-            scene_audio_path = os.path.join(self.work_dir, f"audio_scene_{i+1:02d}.mp3")
-            audio_res = self.tts.synthesize(
-                text=scene.text,
-                output_path=scene_audio_path,
-                voice=self.voice,
-                rate=self.speech_rate
-            )
-            scene_audio_files.append(scene_audio_path)
-            scene_durations.append(audio_res.duration_sec)
+        print(f"\n🚀 [1/5] Synthesizing continuous neural voiceover ({self.voice})...")
+        full_text = " ".join(scene.text for scene in script.scenes)
+        master_voice_path = os.path.join(self.work_dir, "master_voice.mp3")
 
-            # Accumulate word timestamps with scene offset
-            for w in audio_res.words:
-                all_words.append(WordTimestamp(
-                    word=w.word,
-                    start_sec=w.start_sec + cumulative_offset,
-                    end_sec=w.end_sec + cumulative_offset,
-                    duration_sec=w.duration_sec
-                ))
-            cumulative_offset += audio_res.duration_sec
+        audio_res = self.tts.synthesize(
+            text=full_text,
+            output_path=master_voice_path,
+            voice=self.voice,
+            rate=self.speech_rate
+        )
 
-        total_duration = cumulative_offset
-        print(f"    ✓ Total video duration: {total_duration:.1f} seconds")
+        all_words = audio_res.words
+        total_duration = audio_res.duration_sec
+        print(f"    ✓ Spoken duration: {total_duration:.2f}s | Extracted words: {len(all_words)}")
 
-        print(f"\n🎨 [2/5] Generating visuals and Ken Burns motion...")
+        # Calculate exact visual clip timings to match speech sentences
+        scene_timings = self._map_words_to_scenes(script.scenes, all_words, total_duration)
+
+        print(f"\n🎨 [2/5] Producing visuals with style '{self.art_style}' & dynamic motion...")
         scene_video_clips = []
+        
+        # Rotating motion patterns so camera is constantly dynamic and engaging
+        motion_rotation = ["punch_zoom_in", "dramatic_zoom_out", "pan_left", "pan_right", "punch_zoom_in"]
+
         for i, scene in enumerate(script.scenes):
-            dur = scene_durations[i]
+            dur = scene_timings[i][2]
+            motion = scene.motion or motion_rotation[i % len(motion_rotation)]
+            
             img_path = os.path.join(self.work_dir, f"image_scene_{i+1:02d}.jpg")
             clip_path = os.path.join(self.work_dir, f"clip_scene_{i+1:02d}.mp4")
 
             if enable_ai_images:
-                print(f"    → Scene {i+1}: Generating AI visual ('{scene.visual_prompt[:45]}...')...")
+                print(f"    → Scene {i+1}: Generating visual ('{scene.visual_prompt[:40]}...')...")
                 self.visuals.generate_ai_image(prompt=scene.visual_prompt, output_path=img_path)
             else:
                 self.visuals.generate_procedural_background(output_path=img_path, topic=scene.text)
 
-            print(f"    → Scene {i+1}: Rendering Ken Burns motion ({dur:.1f}s, {scene.motion})...")
+            print(f"    → Scene {i+1}: Rendering motion ({dur:.2f}s, {motion})...")
             self.visuals.render_ken_burns_clip(
                 image_path=img_path,
                 output_video_path=clip_path,
                 duration=dur,
-                motion=scene.motion
+                motion=motion
             )
             scene_video_clips.append(clip_path)
 
-        print(f"\n📝 [3/5] Generating karaoke ASS subtitles ({self.subtitle_style} style)...")
+        print(f"\n📝 [3/5] Generating synchronized bouncing subtitles ({self.subtitle_style})...")
         ass_path = os.path.join(self.work_dir, "master_subtitles.ass")
         self.subtitles.generate_ass_script(
             words=all_words,
-            output_ass_path=ass_path,
-            enable_emojis=True
+            output_ass_path=ass_path
         )
-        print(f"    ✓ Subtitles mapped: {len(all_words)} words")
+        print(f"    ✓ Burned subtitles mapped to millisecond speech events")
 
         print(f"\n🎵 [4/5] Sound design & Sidechain audio ducking...")
-        # 1. Concatenate speech audio
-        speech_concat_list = os.path.join(self.work_dir, "speech_concat.txt")
-        with open(speech_concat_list, "w") as f:
-            for s_file in scene_audio_files:
-                f.write(f"file '{os.path.abspath(s_file)}'\n")
-        
-        master_voice_path = os.path.join(self.work_dir, "master_voice.mp3")
-        subprocess.run([
-            "ffmpeg", "-y", "-f", "concat", "-safe", "0",
-            "-i", speech_concat_list,
-            "-c", "copy",
-            master_voice_path
-        ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-        # 2. Prepare background music (custom or procedural)
+        # Prepare background music (procedural or custom)
         if custom_bg_music and os.path.exists(custom_bg_music):
             bg_music_path = custom_bg_music
         else:
@@ -137,7 +172,7 @@ class VideoRenderer:
                 preset=self.bg_music_preset
             )
 
-        # 3. Mix with dynamic sidechain ducking
+        # Mix with dynamic sidechain compression
         master_audio_path = os.path.join(self.work_dir, "master_audio.m4a")
         self.audio.mix_with_ducking(
             voiceover_path=master_voice_path,
@@ -161,12 +196,7 @@ class VideoRenderer:
             raw_video_path
         ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-        # Final pass: Burn subtitles and merge final audio
-        escaped_ass = os.path.abspath(ass_path).replace("\\", "/")
-        if ":" in escaped_ass:
-            # Handle Windows colon in path if needed
-            escaped_ass = escaped_ass[0] + "\\:" + escaped_ass[2:]
-
+        # Final pass: Burn ASS subtitles and mux final mixed audio
         final_cmd = [
             "ffmpeg", "-y",
             "-i", raw_video_path,
@@ -174,7 +204,7 @@ class VideoRenderer:
             "-vf", f"ass={ass_path}",
             "-c:v", "libx264",
             "-preset", "faster",
-            "-crf", "20",
+            "-crf", "19",
             "-pix_fmt", "yuv420p",
             "-c:a", "aac",
             "-b:a", "192k",

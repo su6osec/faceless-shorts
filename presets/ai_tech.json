@@ -1,0 +1,47 @@
+{
+  "title": "Humanoid Robots Are About To Replace Everyone",
+  "niche": "ai_tech",
+  "target_duration": 45,
+  "hook": "In less than five years, humanoid robots will walk among us in public.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "In less than five years, humanoid robots will walk among us in public.",
+      "visual_prompt": "futuristic sleek white humanoid robot standing among humans in bustling modern city street, photorealistic",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "Major tech titans are already deploying bipedal androids in factories that never tire or complain.",
+      "visual_prompt": "automated gigafactory assembly line with robotic arms and humanoid workers under neon lights",
+      "motion": "pan_left"
+    },
+    {
+      "index": 3,
+      "text": "Equipped with advanced multimodal neural networks, they learn physical tasks simply by watching human video.",
+      "visual_prompt": "close up of glowing robotic android face with synthetic blue eyes and intricate micro-circuitry",
+      "motion": "dramatic_zoom_out"
+    },
+    {
+      "index": 4,
+      "text": "The jobs of repetitive labor will vanish overnight. The only safe humans are those who know how to command the machines.",
+      "visual_prompt": "human programmer interacting with holographic 3d AI neural code in dark cybersecurity center",
+      "motion": "pan_right"
+    },
+    {
+      "index": 5,
+      "text": "Are you preparing for the AGI era or will you be caught off guard? Drop your thoughts below.",
+      "visual_prompt": "cyberpunk silhouette of human and robot shaking hands against glowing skyline, dramatic concept art",
+      "motion": "punch_zoom_in"
+    }
+  ],
+  "cta": "Are you preparing for the AGI era or will you be caught off guard?",
+  "tags": [
+    "#aitech",
+    "#robotics",
+    "#futuretech",
+    "#artificialintelligence",
+    "#technews",
+    "#shorts"
+  ]
+}

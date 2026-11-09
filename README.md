@@ -13,22 +13,22 @@
 
 ---
 
-## 🌟 Why Faceless Shorts?
+## 🌟 What Makes This Special?
 
-Most automated video tools charge monthly SaaS subscriptions (\$30–\$100/mo) or demand paid OpenAI, ElevenLabs, and Midjourney API keys. 
-
-**Faceless Shorts is engineered from the ground up to be 100% free forever** by chaining state-of-the-art open APIs, neural speech synthesis, and local media processing:
-
-| Pipeline Stage | Paid Industry Standard | **Faceless Shorts (100% Free)** | Cost |
-| :--- | :--- | :--- | :--- |
-| **Scriptwriting** | ChatGPT Plus (\$20/mo) | **Built-in Viral Retention Formulas & LLM Skill** | **\$0.00** |
-| **Voiceover** | ElevenLabs (\$22–\$99/mo) | **Microsoft Edge-TTS (300+ Neural Studio Voices)** | **\$0.00** |
-| **Word Timestamps**| Whisper API (\$0.006/min) | **Native Edge-TTS WordBoundary Events** | **\$0.00** |
-| **AI Visuals** | Midjourney / DALL-E (\$30/mo) | **Pollinations AI (Flux.1 / SDXL 9:16 Engine)** | **\$0.00** |
-| **Captions** | CapCut Pro / AutoSubtitle | **Karaoke ASS Subtitles (Hormozi / Beast / Neon)** | **\$0.00** |
-| **Sound Design** | Epidemic Sound (\$15/mo) | **Procedural Tension Synth & Sidechain Ducking** | **\$0.00** |
-| **Rendering** | Cloud Render Farms | **Hardware-Accelerated FFmpeg Pipeline** | **\$0.00** |
-| **Total Monthly Cost** | **\$90 – \$250 / month** | **Completely Free Forever** | **\$0.00** |
+1. **100% Zero-Cost Stack**: Microsoft Edge-TTS neural audio + Pollinations AI (Flux.1) + FFmpeg. No subscriptions, no API keys needed.
+2. **Universal Topic Builder**: Use pre-built viral presets (`fitness`, `dark_psychology`, `stoicism`, `motivation`, `finance_hustle`, `ai_tech`, `horror_mystery`, `mind_blowing_facts`) **OR pass ANY custom topic** (`--topic "how to beat procrastination"`). The engine will dynamically build a 5-scene viral script with hooks, scene descriptions, and infinite loops on the fly!
+3. **Trendy Social Media Video Styles**:
+   * **`sketch`**: Detailed black & white manga graphic novel line art with heavy ink crosshatching.
+   * **`old_style`**: Vintage 1970s/80s analog 35mm film aesthetic with warm Kodachrome curves, grain, and vignette.
+   * **`paper_craft`**: Textured torn-paper collage scrapbook aesthetic (the viral Vox / MagnatesMedia style).
+   * **`cyberpunk_glitch`**: Dark neon cyan/magenta rim lighting with deep contrast.
+   * **`cinematic_noir`**: Deep chiaroscuro shadows with warm amber rim light (David Fincher look).
+   * **`hyperreal`**: Photorealistic 8k octane render with cinematic depth of field.
+4. **Premium Typography & 118% Word Bounce**:
+   * Heavy fonts (`Arial Black`, `Impact`, `Helvetica Neue`) with thick 7px-8px black outlines.
+   * Spoken words dynamically pop with a 118% scale bounce animation in real time.
+5. **Frame-Accurate Audio-Visual Sync**:
+   * Continuous stream speech synthesis eliminates MP3 frame padding drift. Visual cuts and karaoke subtitles match speech down to the millisecond.
 
 ---
 
@@ -36,31 +36,32 @@ Most automated video tools charge monthly SaaS subscriptions (\$30–\$100/mo) o
 
 ```mermaid
 flowchart TD
-    A["User Topic or Viral Preset"] --> B["Script Generator (Hook + 4-7 Scenes)"]
+    A["User Topic or Viral Preset"] --> B["Script Generator (Hook + 5 Scenes)"]
     
     subgraph S1["Audio & Timing"]
-        B --> C["Edge-TTS Synthesis"]
-        C --> D["Audio Stream (MP3)"]
-        C --> E["Word-Level Boundary Timestamps"]
+        B --> C["Continuous Edge-TTS Synthesis"]
+        C --> D["Master Audio Stream (MP3)"]
+        C --> E["Millisecond Word Boundaries"]
     end
 
-    subgraph S2["Visual AI Engine"]
-        B --> F["Pollinations AI (Flux.1)"]
-        F --> G["1080x1920 AI Visual Frames"]
-        G --> H["FFmpeg Ken Burns Motion (Zoom / Pan)"]
+    subgraph S2["Visual AI & Art Styles"]
+        B --> F["Pollinations AI (Flux.1) + Art Style Prompt Enriched"]
+        F --> G["Vertical 9:16 Visual Frames"]
+        G --> H["Dynamic Ken Burns Motion (Punch Zoom / Pan)"]
+        H --> I["Artistic Video Grading Filter (Sketch, Vintage, Paper)"]
     end
 
     subgraph S3["Sound & Captions"]
-        E --> I["ASS Karaoke Engine (Hormozi / Beast Styles)"]
-        D --> J["Procedural Ambient Synth"]
-        J --> K["FFmpeg Sidechain Audio Ducking"]
+        E --> J["ASS Karaoke Engine with 118% Word Bounce (Arial Black / Impact)"]
+        D --> K["Procedural Ambient Tension Synth"]
+        K --> L["FFmpeg Sidechain Audio Ducking"]
     end
 
-    H --> L["Master Video Multiplexer & Subtitle Burner"]
-    I --> L
-    K --> L
-    L --> M["🎬 Final Publication-Ready 1080x1920 MP4"]
-    M --> N["📊 Auto-Generated Viral SEO (YT / TikTok / IG)"]
+    I --> M["Master Video Multiplexer & Subtitle Burner"]
+    J --> M
+    L --> M
+    M --> N["🎬 Final Publication-Ready 1080x1920 MP4"]
+    N --> O["📊 Auto-Generated Viral SEO (YT / TikTok / IG)"]
 ```
 
 ---
@@ -85,33 +86,38 @@ pip install -r requirements.txt
 
 ## 🎬 How to Use
 
-### 1. Generate via Built-in Viral Presets (One-Liner)
+### 1. Generate via Built-in Viral Presets
 
-Generate a viral **Dark Psychology** short:
+Generate a viral **Fitness** short (Hormozi style):
 ```bash
-python -m faceless_shorts generate --niche dark_psychology --voice christopher --style hormozi
+python -m faceless_shorts generate --niche fitness --voice christopher --style hormozi
 ```
 
-Generate an ancient **Stoicism** short:
+Generate a **Manga / Sketch** style Dark Psychology short:
 ```bash
-python -m faceless_shorts generate --niche stoicism --voice ryan --style minimalist_gold
+python -m faceless_shorts generate --niche dark_psychology --art-style sketch --voice christopher --style sketch_comic
 ```
 
-Generate a **Mind-Blowing Space Facts** short:
+Generate a **Vintage 35mm Film** Stoicism short:
 ```bash
-python -m faceless_shorts generate --niche mind_blowing_facts --voice guy --style neon_cyberpunk
+python -m faceless_shorts generate --niche stoicism --art-style old_style --voice ryan --style minimalist_gold
 ```
 
-### 2. Fast Offline Mode (Zero Internet / Instant Render)
-If you are on an airplane, have slow internet, or want to test rendering in under 5 seconds, use `--offline` to generate sleek abstract ambient visuals locally:
+Generate an **AI & Future Tech** short (Cyberpunk Neon style):
 ```bash
-python -m faceless_shorts generate --niche stoicism --offline --output output/quick_test.mp4
+python -m faceless_shorts generate --niche ai_tech --art-style cyberpunk_glitch --voice guy --style neon_cyberpunk
 ```
 
-### 3. Generate from Custom JSON Script
-You can supply your own scene definitions:
+### 2. Build on ANY Custom Topic (No Preset Needed!)
+You can pass any topic directly. The engine dynamically writes the script, creates visual prompts, and renders:
 ```bash
-python -m faceless_shorts generate --script-json presets/finance_hustle.json --output output/finance.mp4
+python -m faceless_shorts generate --topic "Cold Showers For Dopamine Reset" --art-style paper_craft --save-preset
+```
+
+### 3. Fast Offline Mode (Instant 4-Second Render)
+Generate sleek abstract dark ambient visuals locally without internet:
+```bash
+python -m faceless_shorts generate --niche fitness --offline --output output/quick_test.mp4
 ```
 
 ### 4. Batch Production (Produce a Week of Content in Minutes)
@@ -122,17 +128,33 @@ python scripts/batch_generate.py --count 5 --output-dir weekly_shorts
 
 ---
 
-## 🎨 Viral Subtitle Styles
+## 🎨 Trendy Video Editing & Art Styles
 
-View all available styles directly in terminal: `python -m faceless_shorts styles`
+View all available styles in terminal: `python -m faceless_shorts art-styles`
 
-| Style Key | Aesthetic | Active Word Highlight | Inactive Color | Outline | Words/Screen |
-| :--- | :--- | :--- | :--- | :--- | :---: |
-| **`hormozi`** | Alex Hormozi Classic | Bright Neon Yellow (`#002BF7`) | Solid White | 6px Black | 3 |
-| **`neon_cyberpunk`** | Electric Sci-Fi | Cyan Glow (`#00FFFF00`) | Lime/White | 5px Purple | 3 |
-| **`crimson_alert`** | Horror / Crime Alert | Vivid Blood Red (`#001111FF`) | Stark White | 6px Black | 2 |
-| **`beast_pop`** | MrBeast Pop | Toxic Lime Green (`#0000FF00`) | Bright Yellow | 7px Black | 3 |
-| **`minimalist_gold`** | Luxury / Meditative | Champagne Gold (`#0050C8E8`)| Silver Gray | 4px Dark | 4 |
+| Art Style Key | Aesthetic Description | Visual Grade |
+| :--- | :--- | :--- |
+| **`hyperreal`** | Photorealistic 8k octane render with cinematic depth of field | Clean vivid studio contrast |
+| **`sketch`** | Detailed black & white manga graphic novel with heavy ink cross-hatching | Grayscale, high-contrast ink lines |
+| **`old_style`** | Vintage 1970s/80s analog 35mm film with grain, Kodachrome curves & vignette | Warm nostalgic retro tones |
+| **`paper_craft`** | Textured torn-paper collage scrapbook aesthetic (Vox / MagnatesMedia style) | Matte paper texture & papercraft |
+| **`cyberpunk_glitch`** | Dark futuristic neon cyan/magenta rim lighting with deep shadows | Saturated neon glow & chromatic rim |
+| **`cinematic_noir`** | Moody chiaroscuro shadows with warm amber rim light (David Fincher look) | Deep blacks, high contrast |
+
+---
+
+## 📝 Viral Subtitle Styles (With 118% Word Bounce)
+
+View all styles in terminal: `python -m faceless_shorts styles`
+
+| Style Key | Font | Active Highlight | Inactive Color | Outline | Words/Screen |
+| :--- | :--- | :--- | :--- | :---: | :---: |
+| **`hormozi`** | Arial Black | Bright Neon Yellow (`#002BF7`) | Solid White | 7px Black | 3 |
+| **`beast_pop`** | Impact | Toxic Lime Green (`#0000FF00`) | Bright Yellow | 8px Black | 3 |
+| **`neon_cyberpunk`** | Arial Black | Electric Cyan (`#00FFFF00`) | Solid White | 6px Purple | 3 |
+| **`crimson_alert`** | Arial Black | Blood Crimson Red (`#001111FF`)| Stark White | 7px Black | 2 |
+| **`sketch_comic`** | Impact | Warm Amber Gold (`#0000D4FF`) | Solid White | 8px Black | 3 |
+| **`minimalist_gold`** | Helvetica Neue | Champagne Gold (`#0050C8E8`)| Silver Gray | 4px Dark | 4 |
 
 ---
 
@@ -142,18 +164,14 @@ Audition voices in terminal: `python -m faceless_shorts voices`
 
 | Shortcut | Voice ID | Gender | Tone & Vibe | Recommended Niches |
 | :--- | :--- | :--- | :--- | :--- |
-| **`christopher`** | `en-US-ChristopherNeural` | Male | Deep, mysterious, intense | Dark Psychology, Stoicism, Crime |
+| **`christopher`** | `en-US-ChristopherNeural` | Male | Deep, mysterious, intense | Fitness, Dark Psychology, Stoicism, Crime |
 | **`guy`** | `en-US-GuyNeural` | Male | Energetic, conversational | Facts, Tech, Lifehacks, Trivia |
 | **`aria`** | `en-US-AriaNeural` | Female | Clear, articulate, credible | History, Documentaries, Science |
 | **`jenny`** | `en-US-JennyNeural` | Female | Youthful, natural, friendly | Lifestyle, Wholesome, Storytelling |
-| **`eric`** | `en-US-EricNeural` | Male | Confident, direct, punchy | Motivation, Finance, Hustle |
+| **`eric`** | `en-US-EricNeural` | Male | Confident, direct, punchy | Motivation, Finance, Hustle, Fitness |
 | **`ryan`** | `en-GB-RyanNeural` | Male | Sophisticated British accent | Philosophy, Literature, Space |
 | **`sonia`** | `en-GB-SoniaNeural` | Female | Dramatic British female | True Crime, Creepypasta, Mystery |
 | **`madhur`** | `hi-IN-MadhurNeural` | Male | Indian English / Hindi dynamic | Facts, Motivation, Desi Trivia |
-| **`swara`** | `hi-IN-SwaraNeural` | Female | Indian English / Hindi smooth | Storytelling, Culture, Mythos |
-| **`alvaro`** | `es-ES-AlvaroNeural` | Male | Spanish native, expressive | Spanish Shorts, Curiosidades |
-
-*To audition audio samples of all voices on your machine, run `python scripts/preview_voices.py`.*
 
 ---
 
@@ -161,86 +179,21 @@ Audition voices in terminal: `python -m faceless_shorts voices`
 
 This repository adheres to the **Agent Skills standard**, making it natively discoverable by AI assistants.
 
-### In Google Antigravity & Gemini CLI
-The skill is registered under `.agents/skills/faceless-shorts/SKILL.md`. Simply prompt the agent:
-> *"Create a 45-second dark psychology short about why people ghost others using the Hormozi subtitle style and Christopher's voice."*
-
-The agent reads `SKILL.md`, formulates the script, generates the visual prompts, executes the engine, and returns the finished video with SEO tags.
-
-### In Claude Code
-Claude Code discovers the root `SKILL.md` or `.claude/skills/`. Prompt Claude:
-> *"Use the faceless-shorts skill to batch generate 3 shorts about space mysteries."*
-
-### In OpenCode / Cursor / Windsurf
-The instructions are codified in `AGENTS.md` and `GEMINI.md`. Any agent can execute commands autonomously.
-
----
-
-## 📁 Repository Structure
-
-```text
-faceless-shorts/
-├── .agents/
-│   └── skills/
-│       └── faceless-shorts/
-│           ├── SKILL.md                          # Main Agent Skill instruction definition
-│           └── references/                       # On-demand knowledge base
-│               ├── viral_hooks_blueprint.md       # 20+ viral hook formulas & pacing
-│               ├── voice_catalog.md              # 300+ Edge-TTS voice list
-│               ├── subtitle_styles.md            # ASS color codes & animation specs
-│               ├── prompt_engineering_visuals.md # Flux.1 / SDXL 9:16 visual prompts
-│               └── free_resources.md             # Free APIs and asset sources
-├── faceless_shorts/                              # Core Python Engine
-│   ├── __init__.py
-│   ├── cli.py                                    # Rich terminal interface
-│   ├── config.py                                 # Presets, voice catalogs, style hexes
-│   ├── script_generator.py                       # Scene chunking & hook builder
-│   ├── tts_engine.py                             # Edge-TTS & word timestamp extractor
-│   ├── visuals.py                                # Pollinations Flux AI & Ken Burns motion
-│   ├── subtitles.py                              # ASS karaoke generator with emojis
-│   ├── audio.py                                  # Procedural tension synth & ducking
-│   ├── renderer.py                               # FFmpeg master assembler
-│   └── metadata.py                               # Viral SEO, titles, descriptions & tags
-├── presets/                                      # Ready-to-render JSON scripts
-│   ├── dark_psychology.json
-│   ├── stoicism.json
-│   ├── mind_blowing_facts.json
-│   ├── horror_mystery.json
-│   └── finance_hustle.json
-├── scripts/
-│   ├── generate_short.py                         # Single execution runner
-│   ├── batch_generate.py                         # Multi-video scheduler
-│   └── preview_voices.py                         # Voice audition generator
-├── tests/                                        # Pytest / Unittest suite
-├── pyproject.toml                                # Package build config
-├── requirements.txt                              # Lightweight dependencies
-├── LICENSE                                       # MIT License (su6osec)
-└── README.md
-```
+* **In Google Antigravity & Gemini CLI**: The skill is mounted at `.agents/skills/faceless-shorts/SKILL.md`. Simply prompt:
+  > *"Create a fitness short in sketch manga style about why compound lifts build the most muscle."*
+* **In Claude Code**: Claude discovers `SKILL.md`. Prompt:
+  > *"Use faceless-shorts to batch produce 3 vintage film style shorts about ancient stoicism."*
+* **In OpenCode / Cursor / Windsurf**: Codified in `AGENTS.md` and `GEMINI.md`.
 
 ---
 
 ## 📤 Posting to GitHub (`su6osec`)
 
-To publish this project to your GitHub profile:
+To publish this project to your GitHub:
 
 ```bash
-# 1. Initialize git repository
-git init
-
-# 2. Add all files
 git add .
-
-# 3. Create your initial release commit
-git commit -m "feat: initial release of 100% free AI faceless shorts generator"
-
-# 4. Set branch to main
-git branch -M main
-
-# 5. Link your GitHub remote repository (replace with your repo URL)
-git remote add origin https://github.com/su6osec/faceless-shorts.git
-
-# 6. Push to GitHub!
+git commit -m "feat: add fitness niche, dynamic custom topic builder, artistic video styles (sketch, vintage, papercraft), 118% word bounce and frame-accurate sync"
 git push -u origin main
 ```
 
@@ -248,4 +201,4 @@ git push -u origin main
 
 ## 📜 License
 
-Distributed under the **MIT License**. Created with ❤️ by **[su6osec](https://github.com/su6osec)**. Free for commercial and non-commercial use on YouTube, TikTok, Instagram, or any other platform.
+Distributed under the **MIT License**. Created with ❤️ by **[su6osec](https://github.com/su6osec)**.

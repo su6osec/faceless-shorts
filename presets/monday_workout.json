@@ -1,0 +1,48 @@
+{
+  "title": "Stop Ruining Your Monday Chest Workout (Form Guide)",
+  "niche": "monday_workout",
+  "target_duration": 42,
+  "hook": "Stop destroying your shoulders every Monday with sloppy bench press form.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "Stop destroying your shoulders every Monday with sloppy bench press form.",
+      "visual_prompt": "cinematic close up of intense muscular athlete lying on bench press gripping loaded barbell, dark gritty gym, dramatic volumetric rim lighting, 8k vertical wallpaper",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "Most people flare their elbows out at ninety degrees, grinding their delicate rotator cuffs into dust.",
+      "visual_prompt": "detailed anatomical view of human shoulder joint and rotator cuff under mechanical stress, glowing red warning energy, hyperrealistic 3d medical render, vertical 9:16",
+      "motion": "dramatic_zoom_out"
+    },
+    {
+      "index": 3,
+      "text": "Tuck your elbows to forty-five degrees, retract your shoulder blades, and pin your heels hard into the floor.",
+      "visual_prompt": "perfect athletic side view showing 45 degree elbow tuck on heavy barbell press, muscular back arch, powerful form, spotlight focus, 8k vertical",
+      "motion": "pan_left"
+    },
+    {
+      "index": 4,
+      "text": "Control the eccentric descent for three full seconds to flood your pecs with pure mechanical tension.",
+      "visual_prompt": "heavy Olympic barbell lowering slowly onto chest of powerful athlete with bulging striated pectoral muscles, sweat droplets, extreme macro cinematic 8k vertical",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 5,
+      "text": "Then explode upward with raw chest contraction. Save this for your Monday workout and tag your gym partner.",
+      "visual_prompt": "muscular bodybuilder locking out heavy barbell at top position with triumphant focused expression, chalk cloud in air, dramatic lighting, 8k vertical",
+      "motion": "pan_right"
+    }
+  ],
+  "cta": "Save this for your Monday workout and tag your gym partner.",
+  "tags": [
+    "#mondayworkout",
+    "#chestday",
+    "#benchpress",
+    "#workoutform",
+    "#gymtips",
+    "#bodybuilding",
+    "#shorts"
+  ]
+}

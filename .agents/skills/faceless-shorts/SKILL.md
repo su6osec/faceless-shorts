@@ -12,10 +12,22 @@ This skill guides you (Claude, Gemini, Antigravity, OpenCode, or any AI assistan
 
 ## 1. Capabilities Overview
 
-* **Zero-Cost Stack**: Microsoft Edge-TTS (multilingual neural voices + word boundaries) + Pollinations AI (Flux.1 9:16 visuals) + FFmpeg (Punchy Ken Burns + ASS subtitle burning + dynamic ducking).
+* **Zero-Cost Stack**: Microsoft Edge-TTS (multilingual neural voices + word boundaries) + Pollinations AI (Flux.1 9:16 visuals) + FFmpeg.
 * **Target Platforms**: YouTube Shorts, Instagram Reels, TikTok (1080x1920, 30/60 FPS).
+* **Open-Source VFX & Animation Suite (`--vfx` / `-x`)**:
+  * **`hollywood`** (Inspired by Natron `github.com/natrongithub/natron`): Multi-pass node compositing with anamorphic bloom/glow diffusion, optical chromatic aberration (RGB shift), and 35mm grain.
+  * **`particles`** (Inspired by Effekseer `github.com/effekseer/effekseer`): Procedural floating cosmic stardust, sparks, and electric arcs.
+  * **`smoke_fire`** (Inspired by OpenVDB `github.com/academysoftwarefoundation/openvdb`): Volumetric rising fire embers, turbulence, and atmospheric smoke dynamics.
+  * **`svg_hud`** (Inspired by SVG.js `github.com/svgdotjs/svg.js` & Friction `github.com/friction2d/friction`): Animated vector sci-fi targeting reticles, rotating telemetry gauges, and corner tech HUD brackets.
+  * **`mocap`** (Inspired by FreeMoCap `github.com/freemocap/freemocap`): Kinematic telemetry tracking points and coordinate radar overlays.
+  * **`toon`** (Inspired by OpenToonz `github.com/opentoonz` & Pencil2D `github.com/pencil2d`): Traditional 2D anime cel-shading with Sobel contour inking and Ghibli palette grading.
+  * **`theatre`** (Inspired by Theatre.js `github.com/theatre-js/theatre`): Non-linear bezier spring easing and elastic momentum for camera motions.
+* **Audio Engineering**:
+  * **Clean Studio Voiceover**: Default is 100% clean human voiceover with **zero background sound, hum, or drone**, mastered to -14 LUFS.
+  * Optional Sub-Bass & Ambient Presets (`--music`): `sub_bass_808`, `dark_tension`, `cinematic_pulse`, `curiosity_ambient`.
 * **Multi-Language Support (`--language` / `-l`)**:
   * English (`en`), Hindi (`hi`), Spanish (`es`), French (`fr`), German (`de`), Portuguese (`pt`), Japanese (`ja`), Arabic (`ar`), Russian (`ru`), Italian (`it`), Indonesian (`id`).
+  * Continuous human prosody without unnatural 1.2s dead stops.
   * Automatic neural voice selection and native font resolution (`Kohinoor Devanagari`, `Hiragino Sans`, `Geeza Pro`, `Arial Black`).
 * **High-Retention Scene Transitions (`--transition` / `-tr`)**:
   * `flash`: 0.22s White Flash Cut (#1 viral retention cut on TikTok & Shorts).
@@ -25,24 +37,7 @@ This skill guides you (Claude, Gemini, Antigravity, OpenCode, or any AI assistan
   * `cut`: Instant direct cut.
 * **Motion Graphics & Animations**:
   * Glowing animated **Retention Progress Bar** at the bottom (keeps viewers watching until the loop).
-  * Dynamic camera motion presets: `punch_zoom_in`, `dramatic_zoom_out`, `pan_left`, `pan_right`, `vertigo_shake`, `whip_zoom`.
   * Active-word 118% scale-bounce karaoke animation in ASS subtitles.
-* **Studio Audio Base & Sound Design**:
-  * Deep sub-bass presets: `sub_bass_808` (45Hz punch), `dark_tension`, `cinematic_pulse`, `curiosity_ambient`.
-  * Procedural Scene Transition Whoosh SFX: Synthesized noise sweep & sub swoosh automatically synced to every scene cut.
-  * Vocal presence EQ (75Hz rumble cut + 3.5kHz clarity boost).
-  * Dynamic sidechain ducking of background music under speech.
-  * Master loudness normalized to -14 LUFS (EBU R128 social media standard).
-* **Universal Niche Support**:
-  * Built-in presets (`fitness`, `dark_psychology`, `stoicism`, `mind_blowing_facts`, `motivation`, `finance_hustle`, `ai_tech`, `horror_mystery`).
-  * **Dynamic AI Script Generator for ANY custom topic or language on the fly**!
-* **Trendy Video Editing Styles (`--art-style`)**:
-  * `sketch`: Detailed black & white manga / inked graphic novel look.
-  * `old_style`: Vintage 1970s/80s analog 35mm film with Kodachrome palette & grain.
-  * `paper_craft`: Textured torn-paper collage scrapbook aesthetic (Vox / MagnatesMedia style).
-  * `cyberpunk_glitch`: Dark neon cyan/magenta rim lighting.
-  * `cinematic_noir`: Deep chiaroscuro shadows with warm amber rim light.
-  * `hyperreal`: Photorealistic 8k octane render.
 
 ---
 
@@ -51,17 +46,15 @@ This skill guides you (Claude, Gemini, Antigravity, OpenCode, or any AI assistan
 When the user requests a short video, follow these steps:
 
 ### Step 1: Script & Niche Selection
-1. You can choose a pre-built niche (`fitness`, `dark_psychology`, `stoicism`, etc.) or pass ANY custom topic directly via `--topic "your topic"`.
+1. Choose a pre-built niche (`fitness`, `dark_psychology`, `stoicism`, etc.) or pass ANY custom topic directly via `--topic "your topic"`.
 2. Specify the language with `--language` (e.g. `--language hi` for Hindi, `--language es` for Spanish).
-3. The dynamic builder constructs a 5-scene high-retention script with a pattern-interrupt hook and loop CTA.
 
-### Step 2: Configure Aesthetics & Audio
+### Step 2: Configure Aesthetics & VFX
+* **VFX Suite**: `--vfx hollywood,particles,svg_hud` (or `--vfx toon`, `--vfx smoke_fire`).
 * **Voice**: Automatically selected for the language, or specify via `-v` / `--voice` (`christopher`, `guy`, `madhur`, `alvaro`, `henri`, `conrad`, `keita`, `hamed`).
 * **Scene Transition**: `--transition flash` (default white flash cut), `crossfade`, `slide`, `wipe`, `cut`.
-* **Audio Preset**: `--music sub_bass_808`, `dark_tension`, `cinematic_pulse`, `curiosity_ambient`.
+* **Audio**: Defaults to clean voiceover with zero background sound (`--music none`). To add sub-bass drone, specify `--music sub_bass_808`.
 * **Subtitle Style**: `--style hormozi`, `beast_pop`, `neon_cyberpunk`, `crimson_alert`, `sketch_comic`, `minimalist_gold`.
-* **Art Style**: `--art-style hyperreal`, `sketch`, `old_style`, `paper_craft`, `cyberpunk_glitch`, `cinematic_noir`.
-* **Progress Bar**: Enabled by default; disable with `--no-progress-bar`.
 
 ### Step 3: Visual Generation Options
 * **Option A (Autonomous Agent / Nano Banana)**: In Antigravity or Gemini, invoke the built-in `image-generator` subagent (Nano Banana) for each scene prompt to create custom 9:16 high-res visuals in `images/<niche>/`, then pass `--images-dir images/<niche>`.
@@ -70,29 +63,19 @@ When the user requests a short video, follow these steps:
 
 ### Step 4: Execute the Python CLI
 
-#### Example 1: High-Retention Fitness Short (White Flash + Sub-Bass 808)
+#### Example 1: Hollywood VFX Black Hole Short (Clean Voiceover + Zero Background Sound)
 ```bash
-python -m faceless_shorts generate --niche fitness --transition flash --music sub_bass_808 --style hormozi
+python -m faceless_shorts generate --niche blackhole --transition flash --vfx hollywood,particles,svg_hud --music none --style hormozi
 ```
 
-#### Example 2: Hindi Short with Native Devanagari Subtitles & Voice
+#### Example 2: Continuous Hindi Short with Native Devanagari & Zero Background Sound
 ```bash
-python -m faceless_shorts generate --topic "कसरत" --language hi --transition flash --style hormozi
+python -m faceless_shorts generate --topic "ब्लैक होल" --language hi --transition flash --music none --style hormozi
 ```
 
-#### Example 3: Spanish Dark Psychology Short (Manga Sketch Style)
+#### Example 3: OpenToonz / Manga Anime Cel-Shaded Short
 ```bash
-python -m faceless_shorts generate --topic "trucos psicologicos" --language es --art-style sketch --transition slide
-```
-
-#### Example 4: Vintage 35mm Film Stoicism Short
-```bash
-python -m faceless_shorts generate --niche stoicism --art-style old_style --transition crossfade --style minimalist_gold
-```
-
-#### Example 5: Instant Offline Test (Render in ~4 seconds)
-```bash
-python -m faceless_shorts generate --niche stoicism --offline --output output/offline_stoic.mp4
+python -m faceless_shorts generate --topic "cyberpunk boxing" --art-style sketch --vfx toon --transition slide
 ```
 
 ### Step 5: Present Companion Metadata Pack

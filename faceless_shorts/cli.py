@@ -20,6 +20,7 @@ from faceless_shorts.config import (
     LANGUAGES,
     DEFAULT_LANGUAGE
 )
+from faceless_shorts.vfx import VFX_PRESETS
 from faceless_shorts.script_generator import (
     VIRAL_TEMPLATES,
     get_template,
@@ -80,6 +81,49 @@ def list_languages():
             l["recommended_font"],
             ", ".join(l["voices"])
         )
+    console.print(table)
+
+def list_vfx():
+    table = Table(title="✨ Open-Source VFX & Animation Suites (Natron, Effekseer, OpenVDB, SVG.js, OpenToonz)", header_style="bold magenta")
+    table.add_column("VFX Key", style="bold green", width=14)
+    table.add_column("Open-Source Engine / Inspired Stack", style="cyan", width=34)
+    table.add_column("Visual Capability & Cinematic Impact")
+
+    table.add_row(
+        "hollywood",
+        "Natron (github.com/natrongithub/natron)",
+        "Node compositing: Anamorphic bloom, chromatic aberration & 35mm halation"
+    )
+    table.add_row(
+        "particles",
+        "Effekseer (github.com/effekseer/effekseer)",
+        "Procedural floating cosmic stardust, sparks & electric energy arcs"
+    )
+    table.add_row(
+        "smoke_fire",
+        "OpenVDB (github.com/academysoftwarefoundation/openvdb)",
+        "Volumetric rising fire embers, turbulence & atmospheric smoke dynamics"
+    )
+    table.add_row(
+        "svg_hud",
+        "SVG.js (github.com/svgdotjs/svg.js) & Friction",
+        "Animated vector sci-fi targeting reticles, corner brackets & HUDs"
+    )
+    table.add_row(
+        "mocap",
+        "FreeMoCap (github.com/freemocap/freemocap)",
+        "Kinematic telemetry tracking points, wireframes & coordinate radars"
+    )
+    table.add_row(
+        "toon",
+        "OpenToonz (github.com/opentoonz) & Pencil2D",
+        "2D cel-shaded anime line inking with Sobel edge detection & Ghibli palette"
+    )
+    table.add_row(
+        "theatre",
+        "Theatre.js (github.com/theatre-js/theatre)",
+        "Non-linear bezier spring easing & elastic momentum for camera motions"
+    )
     console.print(table)
 
 def list_transitions():
@@ -191,13 +235,14 @@ def run_generate(args):
         f"[bold white]Retention Progress Bar:[/bold white] [cyan]{progress_bar_state}[/cyan]\n"
         f"[bold white]Subtitle Style:[/bold white] {args.style}\n"
         f"[bold white]Art & Editing Style:[/bold white] [magenta]{args.art_style}[/magenta]\n"
+        f"[bold white]VFX & Animations:[/bold white] [yellow]{args.vfx or 'none'}[/yellow]\n"
         f"[bold white]Audio:[/bold white] {'Clean Studio Voice (Zero Background Sound)' if (not args.music or args.music == 'none') else f'{args.music} (Ducked, -14 LUFS)'}\n"
         f"[bold white]AI Visuals:[/bold white] {'Disabled (Offline Procedural)' if args.offline else 'Enabled (Pollinations Flux)'}",
         title="🎬 Production Brief",
         border_style="green"
     ))
 
-    # Initialize renderer with transitions, progress bar, audio base and language
+    # Initialize renderer with transitions, VFX, progress bar, audio base and language
     output_path = args.output or f"output/{script.niche}_{lang}_short.mp4"
     renderer = VideoRenderer(
         voice=chosen_voice,
@@ -205,6 +250,7 @@ def run_generate(args):
         subtitle_style=args.style,
         art_style=args.art_style,
         transition=args.transition,
+        vfx=args.vfx,
         progress_bar=not args.no_progress_bar,
         bg_music_preset=args.music,
         speech_rate=args.rate,
@@ -249,6 +295,7 @@ def main():
     gen_parser.add_argument("-l", "--language", type=str, default="en", help="Language code (en, hi, es, fr, de, pt, ja, ar, ru, it, id)")
     gen_parser.add_argument("-v", "--voice", type=str, default="christopher", help="Edge-TTS voice (e.g. 'christopher', 'guy', 'madhur', 'alvaro', 'henri', 'conrad')")
     gen_parser.add_argument("-tr", "--transition", type=str, default="flash", choices=list(TRANSITIONS.keys()), help="Scene transition (flash, crossfade, slide, wipe, cut)")
+    gen_parser.add_argument("-x", "--vfx", type=str, default="none", help="Visual effects suite: hollywood, particles, smoke_fire, svg_hud, mocap, toon, theatre (can comma-separate: 'hollywood,particles')")
     gen_parser.add_argument("-s", "--style", type=str, default="hormozi", choices=list(SUBTITLE_STYLES.keys()), help="Subtitle style (hormozi, beast_pop, neon_cyberpunk, crimson_alert, sketch_comic, minimalist_gold)")
     gen_parser.add_argument("-a", "--art-style", type=str, default="hyperreal", choices=list(ART_STYLES.keys()), help="Visual editing style (hyperreal, sketch, old_style, paper_craft, cyberpunk_glitch, cinematic_noir)")
     gen_parser.add_argument("-m", "--music", type=str, default="none", choices=["none", "dark_tension", "curiosity_ambient", "cinematic_pulse", "sub_bass_808"], help="Background music preset (default: 'none' for pristine clean voiceover with zero background sound)")
@@ -264,6 +311,7 @@ def main():
     subparsers.add_parser("voices", help="List available Edge-TTS voices across languages")
     subparsers.add_parser("languages", help="List supported languages and voice mappings")
     subparsers.add_parser("transitions", help="List scene transitions (flash cut, crossfade, slide, wipe)")
+    subparsers.add_parser("vfx", help="List open-source VFX suites (Natron, Effekseer, OpenVDB, SVG.js, OpenToonz, Theatre.js)")
     subparsers.add_parser("styles", help="List subtitle styles")
     subparsers.add_parser("art-styles", help="List video art & editing styles (sketch, old style, paper craft, etc.)")
     subparsers.add_parser("presets", help="List viral script presets")
@@ -279,6 +327,8 @@ def main():
         list_languages()
     elif args.command == "transitions":
         list_transitions()
+    elif args.command == "vfx":
+        list_vfx()
     elif args.command == "styles":
         list_styles()
     elif args.command == "art-styles":

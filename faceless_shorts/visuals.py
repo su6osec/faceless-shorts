@@ -16,6 +16,7 @@ from typing import Dict, List, Optional
 from PIL import Image, ImageDraw, ImageFilter
 
 from faceless_shorts.config import CANVAS_WIDTH, CANVAS_HEIGHT, DEFAULT_FPS, ART_STYLES
+from faceless_shorts.vfx.theatre_easing import get_theatre_motion_expr
 
 class VisualManager:
     def __init__(self, cache_dir: str = ".cache_visuals", art_style: str = "hyperreal"):
@@ -128,7 +129,9 @@ class VisualManager:
         total_frames = max(int(duration * fps), 30)
 
         # Dynamic high-impact camera motion formulas
-        if motion == "dramatic_zoom_out":
+        if motion.startswith("theatre_"):
+            z_expr, x_expr, y_expr = get_theatre_motion_expr(motion, total_frames)
+        elif motion == "dramatic_zoom_out":
             # Starts close (1.38x) and smoothly reveals out to 1.02x
             z_expr = "if(eq(on,1),1.38,max(zoom-0.0035,1.02))"
             x_expr = "iw/2-(iw/zoom/2)"

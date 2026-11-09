@@ -33,6 +33,7 @@ from faceless_shorts.tts_engine import TTSEngine, WordTimestamp
 from faceless_shorts.visuals import VisualManager
 from faceless_shorts.subtitles import SubtitleGenerator
 from faceless_shorts.audio import SoundEngine
+from faceless_shorts.vfx import VFXManager, VFX_PRESETS
 
 class VideoRenderer:
     def __init__(
@@ -42,6 +43,7 @@ class VideoRenderer:
         subtitle_style: str = "hormozi",
         art_style: str = "hyperreal",
         transition: str = DEFAULT_TRANSITION,
+        vfx: Optional[str] = None,
         progress_bar: bool = True,
         bg_music_preset: Optional[str] = "none",
         speech_rate: str = "+0%",
@@ -66,10 +68,19 @@ class VideoRenderer:
         self.speech_rate = speech_rate
         self.work_dir = work_dir
 
+        # Parse VFX modes
+        if isinstance(vfx, str):
+            self.vfx_modes = [m.strip().lower() for m in vfx.split(",") if m.strip()]
+        elif isinstance(vfx, list):
+            self.vfx_modes = [m.lower() for m in vfx]
+        else:
+            self.vfx_modes = []
+
         self.tts = TTSEngine(default_voice=self.voice)
         self.visuals = VisualManager(cache_dir=os.path.join(work_dir, "cache"), art_style=art_style)
         self.subtitles = SubtitleGenerator(style_name=subtitle_style, language=self.language)
         self.audio = SoundEngine()
+        self.vfx_mgr = VFXManager(work_dir=work_dir)
 
     def _map_words_to_scenes(
         self,
@@ -272,6 +283,17 @@ class VideoRenderer:
                 self._fallback_concat(scene_video_clips, raw_video_path)
         else:
             self._fallback_concat(scene_video_clips, raw_video_path)
+
+        # Hollywood & Open-Source VFX Compositing Pass (Natron, Effekseer, OpenVDB, SVG.js, OpenToonz)
+        if self.vfx_modes and "none" not in self.vfx_modes:
+            print(f"\n✨ [2.5/5] Compositing VFX & Animation Suite ({', '.join(self.vfx_modes)})...")
+            raw_video_path = self.vfx_mgr.apply_vfx_pipeline(
+                base_video_path=raw_video_path,
+                output_video_path=os.path.join(self.work_dir, "vfx_composite.mp4"),
+                duration=total_duration,
+                vfx_modes=self.vfx_modes
+            )
+            print("    ✓ VFX compositing, particle simulation & vector graphics applied")
 
         print(f"\n📝 [3/5] Generating synchronized bouncing subtitles ({self.subtitle_style}, lang={self.language})...")
         ass_path = os.path.join(self.work_dir, "master_subtitles.ass")

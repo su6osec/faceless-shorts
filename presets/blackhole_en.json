@@ -1,0 +1,40 @@
+{
+  "title": "What Actually Happens If You Fall Into A Black Hole",
+  "niche": "blackhole",
+  "target_duration": 32,
+  "hook": "If you fell into a black hole, you wouldn't just die. You would witness the end of the universe.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "If you fell into a black hole, you wouldn't just die. You would witness the end of the universe.",
+      "visual_prompt": "lone astronaut in detailed white spacesuit floating in deep space facing a colossal glowing supermassive black hole with a blinding golden accretion disk bending space-time around it, Interstellar Gargantua aesthetic, volumetric lighting, photorealistic 8k vertical wallpaper, 9:16 vertical orientation",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "The moment you cross the Event Horizon, gravity becomes so infinitely intense that space and time literally swap places.",
+      "visual_prompt": "extreme cinematic close-up of the pitch-black sphere of the event horizon, warped starlight curving in concentric rings of gravitational lensing, volumetric cosmic dust, deep space void, hyperrealistic 8k octane render, 9:16 vertical orientation",
+      "motion": "dramatic_zoom_out"
+    },
+    {
+      "index": 3,
+      "text": "Your feet would feel billions of times more gravitational pull than your head, stretching your body into a single atomic string called Spaghettification.",
+      "visual_prompt": "glowing celestial star getting ripped apart into ultra-thin glowing plasma ribbons spiraling into a massive black hole abyss, cosmic tidal disruption event, vivid orange and violet nebulae, 8k vertical wallpaper, 9:16 vertical orientation",
+      "motion": "pan_left"
+    },
+    {
+      "index": 4,
+      "text": "To someone watching you from Earth, you would freeze on the edge forever. But to you, billions of years of cosmic history would flash by in seconds.",
+      "visual_prompt": "space-time warping grid bending violently downward like a cosmic vortex, spiral galaxies spinning rapidly in the glowing background, Einstein general relativity visualization, cinematic dramatic lighting, 9:16 vertical orientation",
+      "motion": "whip_zoom"
+    },
+    {
+      "index": 5,
+      "text": "At the singularity, the laws of physics shatter completely. Would you dare to jump in? Subscribe to explore the infinite cosmos.",
+      "visual_prompt": "blinding point of pure infinite light at the heart of a cosmic void, emitting powerful relativistic plasma jets into the deep dark universe, epic cosmic masterpiece, 8k vertical wallpaper, 9:16 vertical orientation",
+      "motion": "pan_right"
+    }
+  ],
+  "cta": "Would you dare to jump in? Subscribe to explore the infinite cosmos.",
+  "tags": ["#blackhole", "#space", "#science", "#astronomy", "#physics", "#universe", "#shorts", "#viral"]
+}

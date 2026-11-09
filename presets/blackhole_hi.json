@@ -1,0 +1,40 @@
+{
+  "title": "अगर आप ब्लैक होल में गिर जाएं तो क्या होगा?",
+  "niche": "blackhole",
+  "target_duration": 34,
+  "hook": "अगर आप किसी ब्लैक होल में गिर जाएं, तो आप सिर्फ मरेंगे नहीं, बल्कि पूरे ब्रह्मांड का अंत अपनी आंखों से देखेंगे।",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "अगर आप किसी ब्लैक होल में गिर जाएं, तो आप सिर्फ मरेंगे नहीं, बल्कि पूरे ब्रह्मांड का अंत अपनी आंखों से देखेंगे।",
+      "visual_prompt": "lone astronaut in detailed white spacesuit floating in deep space facing a colossal glowing supermassive black hole with a blinding golden accretion disk bending space-time around it, Interstellar Gargantua aesthetic, volumetric lighting, photorealistic 8k vertical wallpaper, 9:16 vertical orientation",
+      "motion": "punch_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "जैसे ही आप इवेंट होराइजन को पार करेंगे, गुरुत्वाकर्षण इतना भयानक हो जाएगा कि समय और अंतरिक्ष अपनी जगह बदल लेंगे।",
+      "visual_prompt": "extreme cinematic close-up of the pitch-black sphere of the event horizon, warped starlight curving in concentric rings of gravitational lensing, volumetric cosmic dust, deep space void, hyperrealistic 8k octane render, 9:16 vertical orientation",
+      "motion": "dramatic_zoom_out"
+    },
+    {
+      "index": 3,
+      "text": "आपके पैरों पर सिर की तुलना में अरबों गुना ज्यादा खिंचाव पड़ेगा, जो आपके शरीर को एक पतले धागे की तरह खींच देगा, जिसे स्पैगेटीफिकेशन कहते हैं।",
+      "visual_prompt": "glowing celestial star getting ripped apart into ultra-thin glowing plasma ribbons spiraling into a massive black hole abyss, cosmic tidal disruption event, vivid orange and violet nebulae, 8k vertical wallpaper, 9:16 vertical orientation",
+      "motion": "pan_left"
+    },
+    {
+      "index": 4,
+      "text": "पृथ्वी से देखने वाले को आप हमेशा के लिए किनारे पर जमे हुए दिखेंगे, लेकिन आपके लिए अरबों सालों का ब्रह्मांडीय इतिहास कुछ ही पलों में गुजर जाएगा।",
+      "visual_prompt": "space-time warping grid bending violently downward like a cosmic vortex, spiral galaxies spinning rapidly in the glowing background, Einstein general relativity visualization, cinematic dramatic lighting, 9:16 vertical orientation",
+      "motion": "whip_zoom"
+    },
+    {
+      "index": 5,
+      "text": "और केंद्र में मौजूद सिंगुलैरिटी पर विज्ञान के सारे नियम टूट जाते हैं। क्या आप इसमें कूदने की हिम्मत करेंगे? ब्रह्मांड के रहस्यों के लिए सब्सक्राइब करें।",
+      "visual_prompt": "blinding point of pure infinite light at the heart of a cosmic void, emitting powerful relativistic plasma jets into the deep dark universe, epic cosmic masterpiece, 8k vertical wallpaper, 9:16 vertical orientation",
+      "motion": "pan_right"
+    }
+  ],
+  "cta": "क्या आप इसमें कूदने की हिम्मत करेंगे? ब्रह्मांड के रहस्यों के लिए सब्सक्राइब करें।",
+  "tags": ["#blackhole", "#space", "#hindi", "#science", "#antariksh", "#brahmand", "#shorts", "#viral"]
+}

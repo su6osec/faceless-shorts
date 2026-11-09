@@ -464,19 +464,19 @@ class DynamicScriptBuilder:
             title = f"The Brutal Truth About {clean_topic.title()}"
             hook = f"Nobody tells you the brutal truth about {clean_topic}, but here it is."
             scene_1_text = f"Nobody tells you the brutal truth about {clean_topic}, but here it is."
-            scene_2_text = f"Ninety-nine percent of people approach {clean_topic} completely backwards and wonder why they fail."
-            scene_3_text = f"The secret comes down to mastering the fundamentals before adding any complicated tactics."
-            scene_4_text = f"Once you eliminate the noise and execute consistently every single day, results become inevitable."
-            scene_5_text = f"Save this video right now before you forget it, and drop a follow to master your craft."
+            scene_2_text = f"Most people chase flashy tricks in {clean_topic} and wonder why nothing sticks after one week."
+            scene_3_text = f"The ones who actually win at {clean_topic} obsess over one boring fundamental that everybody else skips."
+            scene_4_text = f"Stack that one fundamental every single day for ninety days and {clean_topic} starts compounding like interest."
+            scene_5_text = f"Save this before it disappears, and drop a follow if you truly want to win at {clean_topic}."
             cta = "Save this video right now and drop a follow to master your craft."
             tags = [f"#{niche_key}", "#shorts", "#viral", "#foryou", "#mindset"]
 
         # High-impact visual prompts kept in English for peak image synthesis quality
-        scene_1_prompt = f"cinematic dramatic opening shot representing {clean_topic}, intense atmosphere, volumetric lighting, photorealistic 8k"
-        scene_2_prompt = f"abstract cinematic concept of frustration and chaotic attempts related to {clean_topic}, high contrast shadows"
-        scene_3_prompt = f"golden glowing blueprint and intricate glowing mechanism representing core mastery of {clean_topic}, macro lens"
-        scene_4_prompt = f"majestic successful figure executing disciplined action in sleek modern environment, cinematic golden hour lighting"
-        scene_5_prompt = f"epic triumphant hero silhouette standing on mountaintop overlooking sunrise, cinematic masterpiece"
+        scene_1_prompt = f"dramatic cinematic opening shot representing {clean_topic}, intense atmosphere, volumetric lighting, photorealistic 8k"
+        scene_2_prompt = f"chaotic scattered attempts and frustration around {clean_topic}, high contrast shadows, moody cinematic"
+        scene_3_prompt = f"glowing blueprint and precise mechanism representing the core fundamental of {clean_topic}, macro lens"
+        scene_4_prompt = f"disciplined figure executing daily practice of {clean_topic} in sleek modern environment, cinematic golden hour lighting"
+        scene_5_prompt = f"triumphant silhouette mastering {clean_topic} at sunrise overlooking vast landscape, cinematic masterpiece"
 
         scenes = [
             Scene(1, scene_1_text, scene_1_prompt, "punch_zoom_in"),
@@ -496,32 +496,272 @@ class DynamicScriptBuilder:
             tags=tags
         )
 
-def get_template(niche: str) -> Optional[VideoScript]:
-    """Retrieve a pre-built viral script template by niche, or check presets folder."""
-    if niche in VIRAL_TEMPLATES:
+def get_template(niche: str, language: str = "en") -> Optional[VideoScript]:
+    """Retrieve a pre-built viral script template by niche, or check presets folder.
+    Checks language-suffixed presets first (e.g. presets/blackhole_en.json), then
+    the plain preset file (e.g. presets/stoicism.json)."""
+    lang = (language or "en").lower()
+    if niche in VIRAL_TEMPLATES and lang == "en":
         return VIRAL_TEMPLATES[niche]
-    
-    preset_file = os.path.join("presets", f"{niche}.json")
-    if os.path.exists(preset_file):
-        with open(preset_file, "r") as f:
-            data = json.load(f)
-        return VideoScript.from_dict(data)
+
+    # Language-suffixed preset first (blackhole_en.json / blackhole_hi.json);
+    # the plain preset only applies to English so non-English voices never get
+    # handed an English script. Also try the underscore-stripped key so that
+    # `--topic "Black Hole"` (key: black_hole) resolves presets/blackhole_en.json.
+    variants = [niche]
+    stripped = niche.replace("_", "")
+    if stripped != niche:
+        variants.append(stripped)
+
+    candidates = []
+    for variant in variants:
+        candidates.append(os.path.join("presets", f"{variant}_{lang}.json"))
+    if lang == "en":
+        for variant in variants:
+            candidates.append(os.path.join("presets", f"{variant}.json"))
+
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            with open(candidate, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return VideoScript.from_dict(data)
 
     return None
 
-def create_or_get_script(niche_or_topic: str, language: str = "en") -> VideoScript:
+# --------------------------------------------------------------------------- #
+# Curated topic knowledge packs: factual, high-retention scene scripts for
+# popular custom topics. Matched by keyword against --topic / --niche.
+# --------------------------------------------------------------------------- #
+TOPIC_KNOWLEDGE = {
+    "human_brain": {
+        "match": ["human brain", "brain", "neuroscience", "memory", "mind"],
+        "title": "Your Brain Is Lying To You Every Single Day",
+        "hook": "Your brain deletes ninety-nine percent of what you see and shows you a comfortable fiction.",
+        "scenes": [
+            {
+                "text": "Your brain deletes ninety-nine percent of what you see and shows you a comfortable fiction.",
+                "visual_prompt": "glowing translucent human brain floating in dark laboratory, synapses firing electric blue and gold, cinematic macro lighting, 8k vertical",
+                "motion": "punch_zoom_in"
+            },
+            {
+                "text": "It fills gaps with prediction, so you are literally seeing the past roughly half a second before it arrives.",
+                "visual_prompt": "human eye extreme close up reflecting a cascade of glowing data streams, deep cinematic reflections, 8k vertical",
+                "motion": "dramatic_zoom_out"
+            },
+            {
+                "text": "Every time you remember something, your brain rewrites it. Memory is editing, not playback.",
+                "visual_prompt": "old cassette tape unwinding into glowing neural fibers being rewritten, surreal dark studio lighting, 8k vertical",
+                "motion": "pan_left"
+            },
+            {
+                "text": "That is why eyewitnesses disagree and why your happiest days feel different each time you recall them.",
+                "visual_prompt": "three silhouetted witnesses seeing three different glowing versions of the same event, dramatic noir lighting, 8k vertical",
+                "motion": "whip_zoom"
+            },
+            {
+                "text": "But the same glitch is a feature: focus on one skill for sixty days and your brain physically rewires around it.",
+                "visual_prompt": "neural pathways restructuring into a bright golden highway of myelin, hyperreal microscopic render, 8k vertical",
+                "motion": "pan_right"
+            },
+            {
+                "text": "Your software can be updated. What will you choose to install?",
+                "visual_prompt": "silhouette of a person with glowing upgrade interface hologram emerging from their mind, dark cinematic, 8k vertical",
+                "motion": "pulse_heartbeat"
+            }
+        ],
+        "cta": "What will you choose to install? Comment below.",
+        "tags": ["#neuroscience", "#brainfacts", "#psychology", "#memory", "#mindset", "#shorts"]
+    },
+    "sleep": {
+        "match": ["sleep", "insomnia", "rest", "circadian"],
+        "title": "What Happens If You Stop Sleeping For 7 Days",
+        "hook": "After just three sleepless nights, your brain starts seeing things that are not there.",
+        "scenes": [
+            {
+                "text": "After just three sleepless nights, your brain starts seeing things that are not there.",
+                "visual_prompt": "exhausted person staring at glowing clock at 3am in pitch dark room, cold blue light, cinematic horror lighting, 8k vertical",
+                "motion": "punch_zoom_in"
+            },
+            {
+                "text": "During sleep your brain flushes toxic waste through a cleansing system that only opens at night.",
+                "visual_prompt": "glowing cerebrospinal fluid waves washing through translucent brain channels, scientific macro render, 8k vertical",
+                "motion": "dramatic_zoom_out"
+            },
+            {
+                "text": "Skip that wash and proteins pile up exactly where Alzheimer's disease begins.",
+                "visual_prompt": "dark plaque proteins accumulating between glowing neurons, ominous medical visualization, 8k vertical",
+                "motion": "pan_left"
+            },
+            {
+                "text": "One all-nighter cuts your daytime focus by forty percent, worse than being legally drunk.",
+                "visual_prompt": "blurry office worker with double vision ghosting, motion blur portraits, cold clinical light, 8k vertical",
+                "motion": "whip_zoom"
+            },
+            {
+                "text": "Protect the eight hours. It is the only upgrade your body cannot buy or skip.",
+                "visual_prompt": "peaceful silhouette sleeping under a glowing protective dome of stars, serene cinematic night, 8k vertical",
+                "motion": "orbit_sway"
+            }
+        ],
+        "cta": "Are you getting eight hours? Be honest below.",
+        "tags": ["#sleep", "#healthfacts", "#brainhealth", "#insomnia", "#science", "#shorts"]
+    },
+    "deep_ocean": {
+        "match": ["ocean", "sea", "deep sea", "mariana", "underwater"],
+        "title": "The Deep Ocean Hides Something Terrifying",
+        "hook": "Ninety-five percent of our ocean has never been seen by human eyes.",
+        "scenes": [
+            {
+                "text": "Ninety-five percent of our ocean has never been seen by human eyes.",
+                "visual_prompt": "deep dark ocean abyss with a lone submarine light beam vanishing into blackness, cinematic scale, 8k vertical",
+                "motion": "punch_zoom_in"
+            },
+            {
+                "text": "Below one thousand meters there is zero sunlight, crushing pressure, and temperatures near freezing.",
+                "visual_prompt": "deep sea trench walls under immense pressure, single bioluminescent glow, photorealistic, 8k vertical",
+                "motion": "dramatic_zoom_out"
+            },
+            {
+                "text": "Yet creatures here generate their own light, hunt with living lasers, and survive being frozen solid.",
+                "visual_prompt": "bioluminescent anglerfish glowing electric blue in absolute darkness, macro deep sea photography, 8k vertical",
+                "motion": "pan_left"
+            },
+            {
+                "text": "We have mapped Mars in more detail than our own seafloor.",
+                "visual_prompt": "split composition: red Mars surface above, dark unexplored ocean trench below, epic concept art, 8k vertical",
+                "motion": "whip_zoom"
+            },
+            {
+                "text": "The next giant discovery will not come from the stars. It will come from the deep.",
+                "visual_prompt": "massive unknown glowing silhouette beneath deep ocean surface, awe and dread, cinematic, 8k vertical",
+                "motion": "rise_up"
+            }
+        ],
+        "cta": "Would you dive into the unknown? Comment below.",
+        "tags": ["#deepocean", "#oceanfacts", "#scifi", "#nature", "#didyouknow", "#shorts"]
+    },
+    "mars": {
+        "match": ["mars", "red planet", "space colonization"],
+        "title": "Why Mars Will Kill The First Colonists",
+        "hook": "The first people to live on Mars will die in ways nobody on Earth is ready for.",
+        "scenes": [
+            {
+                "text": "The first people to live on Mars will die in ways nobody on Earth is ready for.",
+                "visual_prompt": "lone astronaut standing before a giant rust-red Martian dust storm approaching a habitat dome, cinematic epic, 8k vertical",
+                "motion": "punch_zoom_in"
+            },
+            {
+                "text": "Martian dust is like ground glass. It poisons your lungs, jams your suits, and it gets everywhere.",
+                "visual_prompt": "extreme macro of jagged red Martian dust particles under microscope light, scientific render, 8k vertical",
+                "motion": "dramatic_zoom_out"
+            },
+            {
+                "text": "There is no magnetic field, so solar radiation silently shreds your DNA every single day.",
+                "visual_prompt": "glowing radiation waves striking a small red planet surface, dangerous violet glow, 8k vertical",
+                "motion": "pan_left"
+            },
+            {
+                "text": "And the soil is laced with toxic perchlorates that would poison any crop you try to grow.",
+                "visual_prompt": "astronaut hands in toxic red Martian soil with wilting green sprout, shallow depth of field, 8k vertical",
+                "motion": "pan_right"
+            },
+            {
+                "text": "Mars does not want us. And that is exactly why some people will go anyway.",
+                "visual_prompt": "rocket lifting off from red Martian surface toward a distant blue Earth in the sky, epic cinematic, 8k vertical",
+                "motion": "shockwave_out"
+            }
+        ],
+        "cta": "Would you risk it? Comment below.",
+        "tags": ["#mars", "#space", "#astronomy", "#spacex", "#science", "#shorts"]
+    }
+}
+
+def _knowledge_lookup(topic: str) -> Optional[VideoScript]:
+    """Find a curated knowledge pack matching this topic, if any."""
+    clean = topic.strip().lower()
+    for pack in TOPIC_KNOWLEDGE.values():
+        if any(keyword in clean for keyword in pack["match"]):
+            scenes = [
+                Scene(index=i + 1, text=s["text"], visual_prompt=s["visual_prompt"], motion=s["motion"])
+                for i, s in enumerate(pack["scenes"])
+            ]
+            return VideoScript(
+                title=pack["title"],
+                niche=re.sub(r"[^\w\s]", "", topic).replace(" ", "_").lower(),
+                target_duration=45,
+                hook=pack["hook"],
+                scenes=scenes,
+                cta=pack["cta"],
+                tags=pack["tags"],
+            )
+    return None
+
+def _llm_lookup(topic: str, language: str) -> Optional[VideoScript]:
+    """Ask a free local LLM (Ollama / OpenAI-compatible) for a fresh script.
+    Returns None instantly when no LLM is reachable."""
+    try:
+        from faceless_shorts.integrations import LLMScriptWriter
+        writer = LLMScriptWriter()
+        if not writer.available():
+            return None
+        data = writer.write_script(
+            topic=topic,
+            language=language,
+            system_prompt=LLM_SYSTEM_PROMPT,
+        )
+        if not data or not data.get("scenes"):
+            return None
+        scenes = [
+            Scene(
+                index=s.get("index", i + 1),
+                text=s.get("text", ""),
+                visual_prompt=s.get("visual_prompt", ""),
+                motion=s.get("motion", "punch_zoom_in"),
+            )
+            for i, s in enumerate(data["scenes"])
+            if s.get("text")
+        ]
+        if len(scenes) < 3:
+            return None
+        key = re.sub(r"[^\w\s]", "", topic).replace(" ", "_").lower()
+        return VideoScript(
+            title=data.get("title", f"The Truth About {topic.title()}"),
+            niche=key,
+            target_duration=int(data.get("target_duration", 45)),
+            hook=data.get("hook", scenes[0].text),
+            scenes=scenes,
+            cta=data.get("cta", ""),
+            tags=data.get("tags", [f"#{key}", "#shorts"]),
+        )
+    except Exception:
+        return None
+
+def create_or_get_script(niche_or_topic: str, language: str = "en", use_llm: bool = True) -> VideoScript:
     """
-    Unified resolver: Returns pre-built template if found and English,
-    or dynamically synthesizes a complete viral script for any custom niche/topic in target language.
+    Unified resolver:
+      1. Pre-built template / language-suffixed preset (presets/<niche>_<lang>.json)
+      2. Curated topic knowledge pack (factual scene scripts for popular topics)
+      3. Free local LLM (Ollama / OpenAI-compatible) when reachable
+      4. Dynamic viral script builder for any topic (all 11 languages)
     """
     key = niche_or_topic.lower().replace(" ", "_")
     lang = (language or "en").lower()
 
-    # Pre-built templates are in English; if target language is English, use template if exists
-    if lang == "en":
-        template = get_template(key)
-        if template:
-            return template
+    # 1. Templates & presets (language aware)
+    template = get_template(key, language=lang)
+    if template:
+        return template
 
-    # Dynamically build a custom viral script in target language
+    # 2. Curated knowledge packs
+    knowledge = _knowledge_lookup(niche_or_topic)
+    if knowledge:
+        return knowledge
+
+    # 3. Optional free LLM (returns instantly when unreachable)
+    if use_llm:
+        llm_script = _llm_lookup(niche_or_topic, lang)
+        if llm_script:
+            return llm_script
+
+    # 4. Dynamic viral script builder
     return DynamicScriptBuilder.build(topic=niche_or_topic, niche=key, language=lang)

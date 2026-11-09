@@ -6,6 +6,7 @@ Author: su6osec (https://github.com/su6osec)
 import argparse
 import json
 import os
+import subprocess
 import sys
 from rich.console import Console
 from rich.table import Table
@@ -15,12 +16,19 @@ from faceless_shorts.config import (
     VOICES,
     SUBTITLE_STYLES,
     ART_STYLES,
+    ART_STYLE_CATEGORIES,
     TRANSITIONS,
     DEFAULT_TRANSITION,
     LANGUAGES,
-    DEFAULT_LANGUAGE
+    DEFAULT_LANGUAGE,
+    QUALITY_PROFILES,
+    DEFAULT_QUALITY,
+    IMAGE_ENGINES,
+    DEFAULT_IMAGE_ENGINE,
 )
+from faceless_shorts.postfx import PostFX
 from faceless_shorts.vfx import VFX_PRESETS
+from faceless_shorts.style_processor import StyleProcessor
 from faceless_shorts.script_generator import (
     VIRAL_TEMPLATES,
     get_template,
@@ -159,17 +167,83 @@ def list_styles():
     console.print(table)
 
 def list_art_styles():
-    table = Table(title="🖌️ Trendy Video Editing & Art Styles", header_style="bold yellow")
+    table = Table(
+        title="🖌️ Art & Editing Styles (3-stage: AI prompt + PIL transform + FFmpeg grade)",
+        header_style="bold yellow"
+    )
     table.add_column("Art Style Key", style="bold green", width=18)
-    table.add_column("Style Name", style="cyan", width=24)
-    table.add_column("Visual Aesthetics & Trending Platforms")
+    table.add_column("Style Name", style="cyan", width=28)
+    table.add_column("Category", style="magenta", width=18)
+    table.add_column("PIL Pixel-Op", style="dim", width=16)
+    table.add_column("Visual Aesthetics")
 
+    current_cat = None
     for key, a in ART_STYLES.items():
+        cat = a.get("category", "cinematic")
+        if cat != current_cat:
+            table.add_row(
+                "", f"[bold white]{ART_STYLE_CATEGORIES.get(cat, cat)}[/bold white]", "", "", ""
+            )
+            current_cat = cat
         table.add_row(
             key,
             a["name"],
+            ART_STYLE_CATEGORIES.get(cat, cat).split(" ", 1)[-1],
+            a.get("pixel_op", "—"),
             a["description"]
         )
+    console.print(table)
+
+def list_effects():
+    table = Table(
+        title="🎚️ Premium Post-FX Chain (Natron-grade FFmpeg compositing)",
+        header_style="bold magenta"
+    )
+    table.add_column("Effect / Pack", style="bold green", width=18)
+    table.add_column("Kind", style="cyan", width=8)
+    table.add_column("Description")
+    for effect in PostFX.available():
+        table.add_row(effect, "fx", PostFX.describe(effect))
+    for pack, members in PostFX.PACKS.items():
+        table.add_row(
+            f"[bold]{pack}[/bold]", "pack",
+            f"Bundle: {', '.join(members) if members else 'clean (no grade)'}"
+        )
+    console.print(table)
+
+def list_quality():
+    table = Table(title="🎯 Render Quality Profiles", header_style="bold blue")
+    table.add_column("Profile", style="bold green", width=14)
+    table.add_column("Resolution", justify="center", width=14)
+    table.add_column("FPS", justify="center", width=6)
+    table.add_column("CRF", justify="center", width=6)
+    table.add_column("x264 Preset", style="cyan", width=14)
+    table.add_column("Audio", width=10)
+    table.add_column("Use Case")
+    use_cases = {
+        "draft": "Fast iteration / previews",
+        "social": "Daily posting (default)",
+        "hd": "Crisp 1080p master, best balance",
+        "cinematic": "60fps buttery motion",
+        "ultra": "1440x2560 max-quality master",
+    }
+    for key, q in QUALITY_PROFILES.items():
+        mark = " (default)" if key == DEFAULT_QUALITY else ""
+        table.add_row(
+            f"[bold]{key}[/bold]{mark}",
+            f"{q['width']}x{q['height']}",
+            str(q["fps"]), str(q["crf"]),
+            q["preset"], q["audio_bitrate"],
+            use_cases.get(key, "")
+        )
+    console.print(table)
+
+def list_style_ops():
+    table = Table(title="🧩 Offline PIL Style Transforms", header_style="bold green")
+    table.add_column("Pixel Op", style="bold yellow", width=20)
+    table.add_column("Description")
+    for op in StyleProcessor.available_ops():
+        table.add_row(op, StyleProcessor.get_description(op))
     console.print(table)
 
 def list_presets():
@@ -223,6 +297,8 @@ def run_generate(args):
 
     progress_bar_state = "Enabled (Bottom Glowing Line)" if not args.no_progress_bar else "Disabled"
     trans_name = TRANSITIONS.get(args.transition, {}).get("name", args.transition)
+    profile = QUALITY_PROFILES.get(args.quality, QUALITY_PROFILES[DEFAULT_QUALITY])
+    effects_display = args.effects if args.effects not in (None, "none", "nofx", "") else "none"
 
     console.print(Panel(
         f"[bold white]Title:[/bold white] {script.title}\n"
@@ -235,14 +311,16 @@ def run_generate(args):
         f"[bold white]Retention Progress Bar:[/bold white] [cyan]{progress_bar_state}[/cyan]\n"
         f"[bold white]Subtitle Style:[/bold white] {args.style}\n"
         f"[bold white]Art & Editing Style:[/bold white] [magenta]{args.art_style}[/magenta]\n"
+        f"[bold white]Post-FX Grade:[/bold white] [magenta]{effects_display}[/magenta]\n"
         f"[bold white]VFX & Animations:[/bold white] [yellow]{args.vfx or 'none'}[/yellow]\n"
-        f"[bold white]Audio:[/bold white] {'Clean Studio Voice (Zero Background Sound)' if (not args.music or args.music == 'none') else f'{args.music} (Ducked, -14 LUFS)'}\n"
-        f"[bold white]AI Visuals:[/bold white] {'Disabled (Offline Procedural)' if args.offline else 'Enabled (Pollinations Flux)'}",
+        f"[bold white]Quality:[/bold white] [green]{args.quality} ({profile['width']}x{profile['height']} @ {args.fps or profile['fps']}fps, crf {profile['crf']})[/green]\n"
+        f"[bold white]Image Engine:[/bold white] {'Procedural (offline)' if args.offline else IMAGE_ENGINES.get(args.engine, args.engine)}\n"
+        f"[bold white]Audio:[/bold white] {'Clean Studio Voice (Zero Background Sound)' if (not args.music or args.music == 'none') else f'{args.music} (Ducked, -14 LUFS)'}",
         title="🎬 Production Brief",
         border_style="green"
     ))
 
-    # Initialize renderer with transitions, VFX, progress bar, audio base and language
+    # Initialize renderer with transitions, VFX, post-FX, quality, engine, audio and language
     output_path = args.output or f"output/{script.niche}_{lang}_short.mp4"
     renderer = VideoRenderer(
         voice=chosen_voice,
@@ -254,7 +332,13 @@ def run_generate(args):
         progress_bar=not args.no_progress_bar,
         bg_music_preset=args.music,
         speech_rate=args.rate,
-        work_dir=".temp_render"
+        work_dir=".temp_render",
+        quality=args.quality,
+        fps=args.fps,
+        effects=args.effects,
+        engine="procedural" if args.offline else args.engine,
+        crf=args.crf,
+        encoder_preset=args.encoder_preset,
     )
 
     rendered_file = renderer.render(
@@ -282,6 +366,95 @@ def run_generate(args):
         border_style="bold green"
     ))
 
+def run_doctor():
+    """Diagnose every optional free-tool integration and print a health table."""
+    from faceless_shorts.integrations import ToolRegistry, doctor_report
+
+    console.print(Panel(
+        "Free & open-source tool integrations (all optional — the core pipeline runs without them)",
+        title="🩺 Doctor", border_style="cyan"
+    ))
+    console.print(doctor_report())
+
+    table = Table(title="Environment", header_style="bold blue")
+    table.add_column("Component", style="bold green", width=22)
+    table.add_column("Status", style="cyan")
+    table.add_column("Notes")
+
+    import shutil as _shutil
+    ffmpeg = _shutil.which("ffmpeg")
+    if ffmpeg:
+        try:
+            out = subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True, timeout=10)
+            version = out.stdout.splitlines()[0].split(" ")[2] if out.stdout else "?"
+        except Exception:
+            version = "?"
+        table.add_row("ffmpeg", f"[green]✓ v{version}[/green]", "Render core (Ken Burns, xfade, Post-FX, libass)")
+    else:
+        table.add_row("ffmpeg", "[red]✗ missing[/red]", "brew install ffmpeg-full")
+
+    try:
+        import edge_tts  # noqa: F401
+        table.add_row("edge-tts", "[green]✓ installed[/green]", "Free neural TTS + word timestamps")
+    except Exception:
+        table.add_row("edge-tts", "[red]✗ missing[/red]", "pip install edge-tts")
+
+    try:
+        import PIL  # noqa: F401
+        table.add_row("Pillow", f"[green]✓ v{PIL.__version__}[/green]", "Offline art-style transforms")
+    except Exception:
+        table.add_row("Pillow", "[red]✗ missing[/red]", "pip install pillow")
+
+    try:
+        import faceless_shorts.postfx as _pf
+        table.add_row("Post-FX", f"[green]✓ {len(_pf.PostFX.available())} effects[/green]",
+                      f"packs: {', '.join(_pf.PostFX.PACKS)}")
+    except Exception as e:
+        table.add_row("Post-FX", f"[red]✗ {e}[/red]", "")
+
+    console.print(table)
+
+def run_transcribe(args):
+    """Local Whisper transcription via FFmpeg's built-in whisper.cpp filter."""
+    from faceless_shorts.integrations import WhisperTranscriber
+
+    if not os.path.exists(args.input):
+        console.print(f"[red]File not found: {args.input}[/red]")
+        sys.exit(1)
+
+    transcriber = WhisperTranscriber()
+    if not transcriber.available():
+        console.print("[red]FFmpeg whisper filter not available in this build.[/red]")
+        console.print("Install a full FFmpeg build (brew install ffmpeg-full) or use openai-whisper.")
+        sys.exit(1)
+
+    console.print(f"[cyan]Ensuring local Whisper model ({args.model}) is cached...[/cyan]")
+    model_path = transcriber.ensure_model(language=args.language)
+    if not model_path:
+        console.print("[red]Could not download Whisper model (network offline?).[/red]")
+        sys.exit(1)
+
+    console.print(f"[cyan]Transcribing {args.input} with local Whisper ({args.model}, lang={args.language})...[/cyan]")
+    fmt = "srt" if (args.output or "").endswith(".srt") else "json"
+    result = transcriber.transcribe(
+        media_path=args.input,
+        language=args.language,
+        out_format=fmt,
+        model_size=args.model,
+    )
+    if result is None:
+        console.print("[red]Transcription failed.[/red]")
+        sys.exit(1)
+
+    out_path = args.output or os.path.splitext(args.input)[0] + f".{fmt}"
+    with open(out_path, "w", encoding="utf-8") as f:
+        if fmt == "json":
+            json.dump(result, f, indent=2, ensure_ascii=False)
+        else:
+            f.write(str(result))
+    console.print(f"[green]✓ Transcription saved to {os.path.abspath(out_path)}[/green]")
+    console.print(Panel(str(result)[:1500], title="Transcript Preview", border_style="green"))
+
 def main():
     parser = argparse.ArgumentParser(
         description="Faceless Shorts: 100% Free AI Faceless Video Generator for YouTube Shorts, Reels, and TikTok."
@@ -291,31 +464,48 @@ def main():
     # generate command
     gen_parser = subparsers.add_parser("generate", help="Generate a faceless short video")
     gen_parser.add_argument("-t", "--topic", type=str, help="Custom topic (e.g. 'how to get 6 pack abs' or 'boxing psychology')")
-    gen_parser.add_argument("-n", "--niche", type=str, help="Choose pre-built niche or custom niche (fitness, stoicism, dark_psychology, motivation, finance_hustle, ai_tech, horror_mystery, etc.)")
+    gen_parser.add_argument("-n", "--niche", type=str, help="Choose pre-built niche or custom niche (fitness, stoicism, dark_psychology, motivation, finance_hustle, ai_tech, horror_mystery, blackhole, etc.)")
     gen_parser.add_argument("-l", "--language", type=str, default="en", help="Language code (en, hi, es, fr, de, pt, ja, ar, ru, it, id)")
     gen_parser.add_argument("-v", "--voice", type=str, default="christopher", help="Edge-TTS voice (e.g. 'christopher', 'guy', 'madhur', 'alvaro', 'henri', 'conrad')")
-    gen_parser.add_argument("-tr", "--transition", type=str, default="flash", choices=list(TRANSITIONS.keys()), help="Scene transition (flash, crossfade, slide, wipe, cut)")
+    gen_parser.add_argument("-tr", "--transition", type=str, default="flash", choices=list(TRANSITIONS.keys()), help="Scene transition (flash, zoom, dissolve, pixelize, blur, circle, ...)")
     gen_parser.add_argument("-x", "--vfx", type=str, default="none", help="Visual effects suite: hollywood, particles, smoke_fire, svg_hud, mocap, toon, theatre (can comma-separate: 'hollywood,particles')")
-    gen_parser.add_argument("-s", "--style", type=str, default="hormozi", choices=list(SUBTITLE_STYLES.keys()), help="Subtitle style (hormozi, beast_pop, neon_cyberpunk, crimson_alert, sketch_comic, minimalist_gold)")
-    gen_parser.add_argument("-a", "--art-style", type=str, default="hyperreal", choices=list(ART_STYLES.keys()), help="Visual editing style (hyperreal, sketch, old_style, paper_craft, cyberpunk_glitch, cinematic_noir)")
+    gen_parser.add_argument("-fx", "--effects", type=str, default="none", help="Premium Post-FX grade: single effects (bloom, halation, chroma, grain, teal_orange, ...) or packs (cinematic, premium, dreamy, retro). Comma-separable.")
+    gen_parser.add_argument("-s", "--style", type=str, default="hormozi", choices=list(SUBTITLE_STYLES.keys()), help="Subtitle style (hormozi, beast_pop, neon_glow, chalk_classic, horror_bleed, ...)")
+    gen_parser.add_argument("-a", "--art-style", type=str, default="hyperreal", choices=list(ART_STYLES.keys()), help="Visual art style (hyperreal, pixel_art, chalkboard, glow_sketch, ps2_style, comic_art, flat_vector, minimal_line, cgi_motion, lego, explainer_3d, ...)")
     gen_parser.add_argument("-m", "--music", type=str, default="none", choices=["none", "dark_tension", "curiosity_ambient", "cinematic_pulse", "sub_bass_808"], help="Background music preset (default: 'none' for pristine clean voiceover with zero background sound)")
     gen_parser.add_argument("-r", "--rate", type=str, default="+0%", help="Speech rate adjustment (default: '+0%%' for natural human cadence)")
+    gen_parser.add_argument("-q", "--quality", type=str, default=DEFAULT_QUALITY, choices=list(QUALITY_PROFILES.keys()), help="Render quality profile (draft, social, hd, cinematic, ultra)")
+    gen_parser.add_argument("--fps", type=int, default=None, help="Override output frame rate (24/30/60)")
+    gen_parser.add_argument("--crf", type=int, default=None, help="Override x264 CRF quality (lower = better, 15-28)")
+    gen_parser.add_argument("--encoder-preset", type=str, default=None, choices=["ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"], help="Override x264 encoder speed/quality preset")
+    gen_parser.add_argument("--engine", type=str, default=DEFAULT_IMAGE_ENGINE, choices=list(IMAGE_ENGINES.keys()), help="Image generation engine (pollinations, comfyui, procedural)")
     gen_parser.add_argument("-o", "--output", type=str, help="Output MP4 file path")
     gen_parser.add_argument("--script-json", type=str, help="Path to custom JSON script file")
     gen_parser.add_argument("--images-dir", type=str, help="Path to folder containing scene_01.jpg, scene_02.jpg, etc.")
     gen_parser.add_argument("--no-progress-bar", action="store_true", help="Disable the glowing bottom retention progress bar")
     gen_parser.add_argument("--save-preset", action="store_true", help="Save the generated script as a reusable preset JSON file")
-    gen_parser.add_argument("--offline", action="store_true", help="Run offline without downloading AI images")
+    gen_parser.add_argument("--offline", action="store_true", help="Run offline without downloading AI images (forces procedural engine)")
 
     # listing commands
     subparsers.add_parser("voices", help="List available Edge-TTS voices across languages")
     subparsers.add_parser("languages", help="List supported languages and voice mappings")
-    subparsers.add_parser("transitions", help="List scene transitions (flash cut, crossfade, slide, wipe)")
+    subparsers.add_parser("transitions", help="List scene transitions (flash, zoom, dissolve, pixelize, blur, ...)")
     subparsers.add_parser("vfx", help="List open-source VFX suites (Natron, Effekseer, OpenVDB, SVG.js, OpenToonz, Theatre.js)")
+    subparsers.add_parser("effects", help="List premium Post-FX grades & packs (bloom, halation, teal_orange, cinematic, ...)")
     subparsers.add_parser("styles", help="List subtitle styles")
-    subparsers.add_parser("art-styles", help="List video art & editing styles (sketch, old style, paper craft, etc.)")
+    subparsers.add_parser("art-styles", help="List all art & editing styles by category")
+    subparsers.add_parser("style-ops", help="List offline PIL style transforms (pixel art, chalkboard, halftone, ...)")
+    subparsers.add_parser("quality", help="List render quality profiles (draft/social/hd/cinematic/ultra)")
     subparsers.add_parser("presets", help="List viral script presets")
     subparsers.add_parser("prompt", help="Print LLM system prompt for Claude/Gemini/OpenCode")
+    subparsers.add_parser("doctor", help="Diagnose free tool integrations (ffmpeg, whisper, comfyui, yt-dlp, ollama, ...)")
+
+    # transcribe command (local Whisper via FFmpeg)
+    tr_parser = subparsers.add_parser("transcribe", help="Transcribe any audio/video to SRT using local Whisper (FFmpeg built-in, 100%% offline)")
+    tr_parser.add_argument("input", type=str, help="Path to audio/video file")
+    tr_parser.add_argument("--language", type=str, default="en", help="Language code (en, hi, es, ...)")
+    tr_parser.add_argument("--model", type=str, default="base", choices=["tiny", "base", "small", "medium", "large"], help="Whisper model size")
+    tr_parser.add_argument("-o", "--output", type=str, help="Output subtitle file path (.srt/.json/.txt)")
 
     args = parser.parse_args()
 
@@ -329,14 +519,24 @@ def main():
         list_transitions()
     elif args.command == "vfx":
         list_vfx()
+    elif args.command == "effects":
+        list_effects()
     elif args.command == "styles":
         list_styles()
     elif args.command == "art-styles":
         list_art_styles()
+    elif args.command == "style-ops":
+        list_style_ops()
+    elif args.command == "quality":
+        list_quality()
     elif args.command == "presets":
         list_presets()
     elif args.command == "prompt":
         console.print(Panel(LLM_SYSTEM_PROMPT, title="🤖 System Prompt for LLMs (Claude/Gemini/OpenCode)", border_style="cyan"))
+    elif args.command == "doctor":
+        run_doctor()
+    elif args.command == "transcribe":
+        run_transcribe(args)
     else:
         print_banner()
         parser.print_help()

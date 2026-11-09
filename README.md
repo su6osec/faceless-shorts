@@ -15,39 +15,36 @@
 
 ## 🌟 What Makes This Special?
 
-1. **100% Zero-Cost Stack**: Microsoft Edge-TTS neural audio + Pollinations AI (Flux.1) + FFmpeg. No subscriptions, no API keys needed.
-2. **Multi-Language Support (`--language` / `-l`)**:
+1. **100% Zero-Cost Stack**: Microsoft Edge-TTS neural audio + Pollinations AI (Flux.1) or local ComfyUI + FFmpeg + Pillow. No subscriptions, no API keys needed.
+2. **45 Three-Stage Art Styles (`--art-style`)**: every style is built from an AI prompt suffix → offline PIL transform (pixel art, chalkboard, glow sketch, halftone, flat vector, minimal line, LEGO studs, blueprint, watercolor...) → FFmpeg grade. Includes `pixel_art`, `ps2_style`, `comic_art`, `cgi_motion`, `lego`, `explainer_3d`, `vaporwave`, `synthwave`, `anime`, `oil_painting` and dozens more across 6 categories.
+3. **Premium Post-FX Grades (`--effects`)**: 15 compositing effects + 6 one-command packs — `cinematic` (bloom + halation + teal-orange + grain + vignette), `premium`, `dreamy`, `retro`. Natron-style multi-pass graphs rendered in FFmpeg.
+4. **5 Quality Profiles (`--quality`)**: `draft` → `social` → `hd` → `cinematic` (60fps) → `ultra` (1440x2560 @60fps), plus `--fps`, `--crf`, `--encoder-preset` overrides. Broadcast-standard limited-range color with `+faststart` for instant social upload.
+5. **17 High-Retention Scene Transitions (`--transition`)**: white flash cut, impact zoom, dream dissolve, pixel mosaic, whip blur, radial, iris circle, fade-to-black, diagonal slice, glitch wind...
+6. **10 Ken Burns Camera Moves**: punch zoom, whip zoom, tracking pans, vertigo shake, crane rise, orbital sway, heartbeat pulse, shockwave pull-back.
+7. **Multi-Language Support (`--language` / `-l`)**:
    * Produce shorts in **11+ languages**: English (`en`), Hindi (`hi`), Spanish (`es`), French (`fr`), German (`de`), Portuguese (`pt`), Japanese (`ja`), Arabic (`ar`), Russian (`ru`), Italian (`it`), Indonesian (`id`).
    * Automatically pairs native neural voices and typography fonts (`Kohinoor Devanagari`, `Hiragino Sans`, `Geeza Pro`, `Arial Black`).
-3. **High-Retention Scene Transitions (`--transition` / `-tr`)**:
-   * **`flash`**: White Flash Cut (#1 viral transition on TikTok/Shorts).
-   * **`crossfade`**: Cinematic 0.25s dissolve between scenes.
-   * **`slide`**: Kinetic whip slide left.
-   * **`wipe`**: Graphic wipe transition.
-   * **`cut`**: Direct hard cut.
-4. **Motion Graphics & Retention Progress Bar**:
+8. **Motion Graphics & Retention Progress Bar**:
    * Glowing animated bottom progress bar to maximize viewer retention and loop completions.
-   * Dynamic Ken Burns camera motion (`punch_zoom_in`, `dramatic_zoom_out`, `pan_left`, `pan_right`, `vertigo_shake`, `whip_zoom`).
-5. **Studio Audio Base & Sound Design**:
+   * Dynamic Ken Burns camera motion (`punch_zoom_in`, `dramatic_zoom_out`, `pan_left`, `pan_right`, `vertigo_shake`, `whip_zoom`, `rise_up`, `orbit_sway`, `pulse_heartbeat`, `shockwave_out`).
+9. **Studio Audio Base & Sound Design**:
    * Deep sub-bass presets: **`sub_bass_808`** (45Hz sub punch), `dark_tension`, `cinematic_pulse`, `curiosity_ambient`.
    * Procedural transition whoosh SFX synced frame-accurately to scene cuts.
    * Vocal presence EQ (cuts rumble at 75Hz + 3.5kHz clarity boost).
    * Dynamic sidechain audio ducking under speech.
    * Master loudness normalization targeting **-14 LUFS** (EBU R128 standard).
-6. **Universal Topic Builder**:
-   * Pre-built viral presets (`fitness`, `dark_psychology`, `stoicism`, `motivation`, `finance_hustle`, `ai_tech`, `horror_mystery`, `mind_blowing_facts`).
+10. **Universal Topic Builder & Script Intelligence**:
+   * Pre-built viral presets (`fitness`, `dark_psychology`, `stoicism`, `motivation`, `finance_hustle`, `ai_tech`, `horror_mystery`, `mind_blowing_facts`, `blackhole`).
+   * **Curated knowledge packs** with factual scene scripts (brain, sleep, ocean, Mars).
+   * **Optional free local LLM** (Ollama / OpenAI-compatible) for fresh scripts on any topic.
    * **Dynamic AI Script Generator for ANY custom topic or language on the fly** (`--topic "boxing psychology"`).
-7. **Trendy Social Media Video Styles (`--art-style`)**:
-   * **`sketch`**: Detailed black & white manga graphic novel line art with heavy ink crosshatching.
-   * **`old_style`**: Vintage 1970s/80s analog 35mm film aesthetic with warm Kodachrome curves, grain, and vignette.
-   * **`paper_craft`**: Textured torn-paper collage scrapbook aesthetic (the viral Vox / MagnatesMedia style).
-   * **`cyberpunk_glitch`**: Dark neon cyan/magenta rim lighting with deep contrast.
-   * **`cinematic_noir`**: Deep chiaroscuro shadows with warm amber rim light (David Fincher look).
-   * **`hyperreal`**: Photorealistic 8k octane render with cinematic depth of field.
-8. **Premium Typography & 118% Word Bounce**:
-   * Heavy fonts (`Arial Black`, `Impact`, `Kohinoor Devanagari`) with thick 7px-8px black outlines.
+11. **Free Tool Integrations (`doctor`, `transcribe`)** — all optional and auto-detected:
+   * **Whisper STT** via FFmpeg's built-in whisper.cpp filter → 100% offline SRT/JSON transcription.
+   * **ComfyUI** local GPU image generation (`--engine comfyui`), **yt-dlp** B-roll sourcing, **Ollama** scriptwriting, **Pexels/Pixabay** free stock.
+12. **Premium Typography & 118% Word Bounce**:
+   * 13 subtitle styles (Arial Black, Impact, Chalkboard SE, Georgia, neon glow blur, phosphor green arcade...) with thick 7px-8px black outlines.
    * Spoken words dynamically pop with a 118% scale bounce animation in real time.
-9. **Frame-Accurate Synchronization**:
+13. **Frame-Accurate Synchronization**:
    * Continuous stream speech synthesis eliminates MP3 frame padding drift. Visual cuts, transitions, whooshes, and karaoke subtitles match speech down to the millisecond.
 
 ---
@@ -133,9 +130,24 @@ python -m faceless_shorts generate --niche stoicism --art-style old_style --tran
 python -m faceless_shorts generate --niche stoicism --offline --output output/offline_stoic.mp4
 ```
 
-### 6. Batch Production (Produce a Week of Content in Minutes)
+### 6. Premium Demo-Style Render (Cinematic Grade + Impact Zoom + HD)
+```bash
+python -m faceless_shorts generate --topic "black hole" -q hd -fx cinematic -tr zoom -s neon_glow --output output/black_hole_demo.mp4
+```
+
+### 7. Retro Pixel-Art Short (Offline, Renders in Seconds)
+```bash
+python -m faceless_shorts generate --niche mind_blowing_facts -a pixel_art -tr pixelize -fx retro --offline
+```
+
+### 8. Batch Production (Produce a Week of Content in Minutes)
 ```bash
 python scripts/batch_generate.py --count 5 --output-dir weekly_shorts
+```
+
+### 🔍 Free Tool Health Check
+```bash
+python -m faceless_shorts doctor   # detects FFmpeg, whisper.cpp, yt-dlp, ComfyUI, Ollama, Pexels/Pixabay keys
 ```
 
 ---
@@ -164,28 +176,44 @@ View all languages: `python -m faceless_shorts languages`
 
 View transitions: `python -m faceless_shorts transitions`
 
-| Key | Transition Name | Duration | Description |
-| :--- | :--- | :---: | :--- |
-| **`flash`** | White Flash Cut | 0.22s | #1 viral retention transition on TikTok and YouTube Shorts |
-| **`crossfade`** | Cinematic Crossfade | 0.25s | Smooth cinematic dissolve between scenes |
-| **`slide`** | Dynamic Slide Left | 0.22s | Fast kinetic whip slide transition |
-| **`wipe`** | Graphic Wipe Left | 0.22s | Clean graphic wipe across the canvas |
-| **`cut`** | Hard Cut | 0ms | Instant cut between scenes |
+| Key | Transition Name | FFmpeg Technique | Description |
+| :--- | :--- | :--- | :--- |
+| **`flash`** | White Flash Cut | `xfade=fadewhite` | #1 viral retention transition on TikTok and YouTube Shorts |
+| **`crossfade`** | Cinematic Crossfade | `xfade=fade` | Smooth 0.25s cinematic dissolve |
+| **`slide`** | Dynamic Slide Left | `xfade=slideleft` | Fast kinetic whip slide |
+| **`wipe`** | Graphic Wipe Left | `xfade=wipeleft` | Clean graphic wipe across the canvas |
+| **`cut`** | Hard Cut | — | Instant 0ms cut between scenes |
+| **`zoom`** | Impact Zoom-In | `xfade=zoomin` | Hard punch zoom-in (MrBeast scene impact) |
+| **`dissolve`** | Dream Dissolve | `xfade=dissolve` | Frame-scrambling flashback dissolve |
+| **`pixelize`** | Pixel Mosaic | `xfade=pixelize` | 8-bit mosaic (pairs with pixel_art / PS2) |
+| **`radial`** | Radial Burst | `xfade=radial` | Circular reveal sweeping from center |
+| **`circle`** | Iris Circle Open | `xfade=circleopen` | Camera-iris retro cartoon reveal |
+| **`blur`** | Whip Blur | `xfade=hblur` | Directional motion-blur whip pan |
+| **`black`** | Fade To Black | `xfade=fadeblack` | Dramatic beat-drop cut |
+| **`smooth`** | Smooth Glide | `xfade=smoothleft` | Eased premium documentary slide |
+| **`diag`** | Diagonal Slice | `xfade=diagbl` | Comic-panel slice (pairs with comic_art) |
+| **`squeeze`** | Elastic Squeeze | `xfade=squeezev` | Vertical elastic squeeze (toy/playful) |
+| **`wind`** | Glitch Wind | `xfade=hlwind` | Wind-shear glitch wipe (cyberpunk/VHS) |
+| **`gray`** | Bleach Fade | `xfade=fadegrays` | Desaturating emotional fade-to-gray |
+
+All 17 keys map to real FFmpeg `xfade` transition names (FFmpeg 9 ships 57) — every mapping is verified by unit test.
 
 ---
 
 ## 🎨 Trendy Video Editing & Art Styles
 
-View styles: `python -m faceless_shorts art-styles`
+View styles: `python -m faceless_shorts art-styles` (45 styles in 6 categories)
 
-| Art Style Key | Aesthetic Description | Visual Grade |
-| :--- | :--- | :--- |
-| **`hyperreal`** | Photorealistic 8k octane render with volumetric studio lighting | Clean vivid studio contrast |
-| **`sketch`** | Detailed black & white manga graphic novel with heavy ink cross-hatching | Grayscale, high-contrast ink lines |
-| **`old_style`** | Vintage 1970s/80s analog 35mm film with grain, Kodachrome curves & vignette | Warm nostalgic retro tones |
-| **`paper_craft`** | Textured torn-paper collage scrapbook aesthetic (Vox / MagnatesMedia style) | Matte paper texture & papercraft |
-| **`cyberpunk_glitch`** | Dark futuristic neon cyan/magenta rim lighting with deep shadows | Saturated neon glow & rim light |
-| **`cinematic_noir`** | Moody chiaroscuro shadows with warm amber rim light (David Fincher look) | Deep blacks, high contrast |
+Every style runs three stages: **AI prompt suffix** → **offline PIL transform** (works with `--offline` too) → **FFmpeg grade** during motion render.
+
+| Category | Style Keys |
+| :--- | :--- |
+| 🎬 **Cinematic & Photoreal** (9) | `hyperreal` `cinematic_noir` `old_style` `cyberpunk_glitch` `teal_orange` `anamorphic_epic` `documentary` `noir_bw` `neon_noir` |
+| 🎨 **Illustration & Art** (13) | `sketch` `chalkboard` `glow_sketch` `comic_art` `flat_vector` `minimal_line` `watercolor` `oil_painting` `pop_art` `blueprint` `anime` `storybook` `ink_wash` |
+| 🕹️ **Retro & Games** (8) | `pixel_art` `ps2_style` `crt_retro` `vaporwave` `low_poly` `game_boy` `voxel_art` `lego` |
+| 🧊 **3D & Motion Graphics** (5) | `cgi_motion` `explainer_3d` `isometric_3d` `claymation` `product_render` |
+| 📰 **Texture & Craft** (6) | `paper_craft` `riso` `halftone_news` `steampunk` `stained_glass` `ukiyo_e` |
+| ⚡ **Neon & Future** (4) | `neon_glow` `synthwave` `hologram` `matrix_code` |
 
 ---
 
@@ -201,6 +229,57 @@ View subtitle styles: `python -m faceless_shorts styles`
 | **`crimson_alert`** | Arial Black | Blood Crimson Red (`#001111FF`)| Stark White | 7px Black | 2 |
 | **`sketch_comic`** | Impact | Warm Amber Gold (`#0000D4FF`) | Solid White | 8px Black | 3 |
 | **`minimalist_gold`** | Helvetica Neue | Champagne Gold (`#0050C8E8`)| Silver Gray | 4px Dark | 4 |
+| **`neon_glow`** | Arial Black | Pure Neon Cyan | Solid White | 5px Black + `\blur` halo | 3 |
+| **`chalk_classic`** | Chalkboard SE | Chalk Yellow | Chalk White | 6px Slate | 3 |
+| **`retro_pop`** | Courier Bold | Hot Pink | Cream White | 7px Black | 3 |
+| **`pixel_arcade`** | Press Start 2P | Phosphor Green | Amber | 6px Black | 2 |
+| **`luxury_cinema`** | Georgia | Champagne Gold | Warm Ivory | 3px Dark | 4 |
+| **`horror_bleed`** | American Typewriter | Blood Crimson | Stark White | 6px Black + glow | 2 |
+| **`glow_blur`** | Arial Black | Electric Cyan | Solid White | 5px + 8px neon blur | 3 |
+
+All styles feature 118% active-word bounce, word-level karaoke timing (Edge-TTS native timestamps) and proportional scaling for any canvas size.
+
+---
+
+## 🎚️ Quality Profiles (`-q`)
+
+View profiles: `python -m faceless_shorts quality`
+
+| Profile | Resolution | FPS | CRF | Use Case |
+| :--- | :---: | :---: | :---: | :--- |
+| **`draft`** | 1080x1920 | 30 | 30 | Fast iteration / previews |
+| **`social`** | 1080x1920 | 30 | 23 | Standard TikTok / Reels / Shorts upload |
+| **`hd`** | 1080x1920 | 60 | 20 | High-fidelity smooth motion |
+| **`cinematic`** | 1440x2560 | 30 | 18 | Film-look premium grade |
+| **`ultra`** | 1440x2560 | 60 | 16 | Maximum quality (large file) |
+
+Override any profile with `--fps`, `--crf`, `--encoder-preset`.
+
+---
+
+## 🌈 Premium Post-FX Grades (`-fx`)
+
+View effects: `python -m faceless_shorts effects`
+
+15 multi-pass FFmpeg compositing grades (bloom, halation, chromatic aberration, teal-orange, film grain, vignette, anamorphic streaks):
+
+`cinematic_teal_orange` · `neo_tokyo_night` · `vhs_1987` · `deep_space` · `sunset_bloom` · `night_vision` · `noir_high_contrast` · `polaroid` · `toxic_waste` · `royal_gold` · `ghost_in_shell` · `fire_ember` · `ice_age` · `dream_haze` · `broadcast_clean`
+
+Or chain several at once with a pack: `-fx cinematic` · `-fx premium` · `-fx dreamy` · `-fx retro`
+
+---
+
+## 🛠️ Free Tool Integrations
+
+`python -m faceless_shorts doctor` auto-detects optional free tools — everything works with zero installs, these only unlock more power:
+
+| Tool | Unlocks | Cost |
+| :--- | :--- | :--- |
+| **whisper.cpp / FFmpeg whisper** | `transcribe` command → local SRT extraction | Free, offline |
+| **yt-dlp** | Reference/compilation workflows | Free |
+| **ComfyUI** | `--engine comfyui` local Stable Diffusion visuals | Free, offline |
+| **Ollama** | Local LLM script generation (no OpenAI key) | Free, offline |
+| **Pexels / Pixabay keys** | Stock video/image backgrounds (optional keys) | Free tier |
 
 ---
 

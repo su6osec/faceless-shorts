@@ -27,12 +27,28 @@ def format_ass_time(seconds: float) -> str:
     return f"{hours}:{minutes:02d}:{secs:02d}.{centisecs:02d}"
 
 class SubtitleGenerator:
-    def __init__(self, style_name: str = "hormozi", language: str = "en"):
+    def __init__(
+        self,
+        style_name: str = "hormozi",
+        language: str = "en",
+        width: int = CANVAS_WIDTH,
+        height: int = CANVAS_HEIGHT
+    ):
         self.style_config = SUBTITLE_STYLES.get(style_name, SUBTITLE_STYLES["hormozi"]).copy()
         self.language = (language or "en").lower()
+        self.width = width or CANVAS_WIDTH
+        self.height = height or CANVAS_HEIGHT
         self.words_per_screen = self.style_config.get("words_per_screen", 3)
         self.uppercase = self.style_config.get("uppercase", True)
         self.scale_bounce = self.style_config.get("scale_bounce", 118)
+        self.glow_blur = self.style_config.get("glow_blur", 0)
+
+        # Scale typography & position proportionally for non-1080x1920 canvases
+        scale = self.height / CANVAS_HEIGHT
+        if abs(scale - 1.0) > 0.01:
+            self.style_config["font_size"] = max(24, int(self.style_config.get("font_size", 90) * scale))
+            self.style_config["margin_v"] = int(self.style_config.get("margin_v", 700) * scale)
+            self.style_config["outline"] = max(2, int(round(self.style_config.get("outline", 7) * scale)))
 
         # Dynamic script & font resolution for non-Latin writing systems
         if self.language in LANGUAGES and self.language != "en":
@@ -70,8 +86,8 @@ class SubtitleGenerator:
 
         header = f"""[Script Info]
 ScriptType: v4.00+
-PlayResX: {CANVAS_WIDTH}
-PlayResY: {CANVAS_HEIGHT}
+PlayResX: {self.width}
+PlayResY: {self.height}
 ScaledBorderAndShadow: yes
 
 [V4+ Styles]
@@ -115,11 +131,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                     display_text = cleaned_word.upper() if self.uppercase else cleaned_word
                     
                     if idx == active_idx:
-                        # Active popping word with scale bounce and highlight color
+                        # Active popping word with scale bounce, highlight color & optional neon glow
+                        glow_tag = f"\\blur{self.glow_blur}" if self.glow_blur else ""
+                        reset_glow = "\\blur0" if self.glow_blur else ""
                         parts.append(
-                            f"{{\\fscx{bounce}\\fscy{bounce}\\c{highlight_color}}}"
+                            f"{{\\fscx{bounce}\\fscy{bounce}\\c{highlight_color}{glow_tag}}}"
                             f"{display_text}"
-                            f"{{\\fscx100\\fscy100\\c{primary_color}}}"
+                            f"{{\\fscx100\\fscy100\\c{primary_color}{reset_glow}}}"
                         )
                     else:
                         parts.append(display_text)

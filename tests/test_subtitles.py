@@ -36,5 +36,10 @@ class TestSubtitles(unittest.TestCase):
         # Check scale bounce popping tag
         self.assertIn("\\fscx118\\fscy118", content)
 
+    def test_hindi_language_font(self):
+        hi_gen = SubtitleGenerator(style_name="hormozi", language="hi")
+        self.assertEqual(hi_gen.style_config["font_name"], "Kohinoor Devanagari")
+        self.assertFalse(hi_gen.uppercase)
+
 if __name__ == "__main__":
     unittest.main()

@@ -148,6 +148,11 @@ class VisualManager:
             z_expr = "min(zoom+0.002,1.3)"
             x_expr = "iw/2-(iw/zoom/2)+sin(on*0.06)*20"
             y_expr = "ih/2-(ih/zoom/2)+cos(on*0.05)*15"
+        elif motion == "whip_zoom":
+            # High-impact dynamic whip zoom surge
+            z_expr = f"min(1.0+0.45*pow(on/{total_frames},1.6),1.48)"
+            x_expr = "iw/2-(iw/zoom/2)"
+            y_expr = "ih/2-(ih/zoom/2)"
         else: # punch_zoom_in default
             # Fast, punchy camera push-in (1.0x -> 1.38x)
             z_expr = "min(zoom+0.0035,1.38)"

@@ -34,6 +34,16 @@ class TestScriptGenerator(unittest.TestCase):
         script_custom = create_or_get_script("quantum computing")
         self.assertEqual(len(script_custom.scenes), 5)
 
+    def test_multilingual_script_creation(self):
+        script_hi = DynamicScriptBuilder.build("कसरत", language="hi")
+        self.assertIn("कसरत", script_hi.title)
+        self.assertEqual(len(script_hi.scenes), 5)
+        self.assertIn("#hindi", script_hi.tags)
+
+        script_es = DynamicScriptBuilder.build("boxeo", language="es")
+        self.assertIn("Boxeo", script_es.title)
+        self.assertIn("#parati", script_es.tags)
+
     def test_to_dict_and_from_dict(self):
         original = get_template("stoicism")
         data = original.to_dict()

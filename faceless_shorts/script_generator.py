@@ -421,48 +421,79 @@ Output ONLY valid JSON formatted as follows:
 class DynamicScriptBuilder:
     """
     Intelligent Builder that constructs viral, publication-ready scripts
-    for ANY custom topic or niche without requiring pre-stored templates.
+    for ANY custom topic or niche across multiple languages without requiring pre-stored templates.
     """
     @staticmethod
-    def build(topic: str, niche: Optional[str] = None) -> VideoScript:
+    def build(topic: str, niche: Optional[str] = None, language: str = "en") -> VideoScript:
         clean_topic = topic.strip()
         niche_key = (niche or re.sub(r"[^\w\s]", "", clean_topic).replace(" ", "_")).lower()
-        
-        # High-impact curiosity hooks adapted to the topic
-        hook = f"Nobody tells you the brutal truth about {clean_topic}, but here it is."
-        
-        scene_1_text = f"Nobody tells you the brutal truth about {clean_topic}, but here it is."
+        lang = (language or "en").lower()
+
+        # Localized script lines based on selected language
+        if lang == "hi":
+            title = f"{clean_topic} का कड़वा सच"
+            hook = f"{clean_topic} के बारे में कोई आपको कड़वा सच नहीं बताता, लेकिन यह रहा।"
+            scene_1_text = f"{clean_topic} के बारे में कोई आपको कड़वा सच नहीं बताता, लेकिन यह रहा।"
+            scene_2_text = f"निन्यानवे प्रतिशत लोग {clean_topic} को गलत तरीके से करते हैं और सोचते हैं कि वे असफल क्यों हुए।"
+            scene_3_text = f"असली रहस्य किसी भी जटिल तरीके को जोड़ने से पहले बुनियादी बातों में महारत हासिल करना है।"
+            scene_4_text = f"एक बार जब आप भटकाव हटाकर हर दिन अभ्यास करते हैं, तो सफलता निश्चित हो जाती है।"
+            scene_5_text = f"इस वीडियो को भूलने से पहले अभी सेव करें और अपने कौशल को निखारने के लिए फॉलो करें।"
+            cta = "इस वीडियो को सेव करें और कमेंट में अपनी राय बताएं।"
+            tags = [f"#{niche_key}", "#shorts", "#hindi", "#viral", "#foryou", "#mindset"]
+        elif lang == "es":
+            title = f"La Verdad Sobre {clean_topic.title()}"
+            hook = f"Nadie te dice la verdad sobre {clean_topic}, pero aquí está."
+            scene_1_text = f"Nadie te dice la verdad sobre {clean_topic}, pero aquí está."
+            scene_2_text = f"El noventa y nueve por ciento de las personas abordan {clean_topic} al revés y se preguntan por qué fallan."
+            scene_3_text = f"El verdadero secreto es dominar los fundamentos antes de añadir tácticas complicadas."
+            scene_4_text = f"Una vez que eliminas el ruido y eres constante todos los días, los resultados son inevitables."
+            scene_5_text = f"Guarda este video antes de que lo olvides y síguenos para dominar esta habilidad."
+            cta = "Guarda este video y comparte tu opinión en los comentarios."
+            tags = [f"#{niche_key}", "#shorts", "#viral", "#parati", "#motivacion"]
+        elif lang == "fr":
+            title = f"La Vérité Sur {clean_topic.title()}"
+            hook = f"Personne ne vous dit la vérité sur {clean_topic}, mais la voici."
+            scene_1_text = f"Personne ne vous dit la vérité sur {clean_topic}, mais la voici."
+            scene_2_text = f"Quatre-vingt-dix-neuf pour cent des gens abordent {clean_topic} à l'envers et s'étonnent d'échouer."
+            scene_3_text = f"Le secret réside dans la maîtrise des principes fondamentaux avant toute tactique compliquée."
+            scene_4_text = f"Une fois le bruit éliminé et une exécution quotidienne, les résultats deviennent inévitables."
+            scene_5_text = f"Enregistrez cette vidéo avant de l'oublier et abonnez-vous pour progresser."
+            cta = "Enregistrez cette vidéo et donnez votre avis en commentaire."
+            tags = [f"#{niche_key}", "#shorts", "#viral", "#pourtoi", "#developpement"]
+        else: # Default English
+            title = f"The Brutal Truth About {clean_topic.title()}"
+            hook = f"Nobody tells you the brutal truth about {clean_topic}, but here it is."
+            scene_1_text = f"Nobody tells you the brutal truth about {clean_topic}, but here it is."
+            scene_2_text = f"Ninety-nine percent of people approach {clean_topic} completely backwards and wonder why they fail."
+            scene_3_text = f"The secret comes down to mastering the fundamentals before adding any complicated tactics."
+            scene_4_text = f"Once you eliminate the noise and execute consistently every single day, results become inevitable."
+            scene_5_text = f"Save this video right now before you forget it, and drop a follow to master your craft."
+            cta = "Save this video right now and drop a follow to master your craft."
+            tags = [f"#{niche_key}", "#shorts", "#viral", "#foryou", "#mindset"]
+
+        # High-impact visual prompts kept in English for peak image synthesis quality
         scene_1_prompt = f"cinematic dramatic opening shot representing {clean_topic}, intense atmosphere, volumetric lighting, photorealistic 8k"
-
-        scene_2_text = f"Ninety-nine percent of people approach {clean_topic} completely backwards and wonder why they fail."
         scene_2_prompt = f"abstract cinematic concept of frustration and chaotic attempts related to {clean_topic}, high contrast shadows"
-
-        scene_3_text = f"The secret comes down to mastering the fundamentals before adding any complicated tactics."
         scene_3_prompt = f"golden glowing blueprint and intricate glowing mechanism representing core mastery of {clean_topic}, macro lens"
-
-        scene_4_text = f"Once you eliminate the noise and execute consistently every single day, results become inevitable."
         scene_4_prompt = f"majestic successful figure executing disciplined action in sleek modern environment, cinematic golden hour lighting"
-
-        scene_5_text = f"Save this video right now before you forget it, and drop a follow to master your craft."
         scene_5_prompt = f"epic triumphant hero silhouette standing on mountaintop overlooking sunrise, cinematic masterpiece"
 
         scenes = [
             Scene(1, scene_1_text, scene_1_prompt, "punch_zoom_in"),
             Scene(2, scene_2_text, scene_2_prompt, "dramatic_zoom_out"),
             Scene(3, scene_3_text, scene_3_prompt, "pan_left"),
-            Scene(4, scene_4_text, scene_4_prompt, "pan_right"),
-            Scene(5, scene_5_text, scene_5_prompt, "punch_zoom_in")
+            Scene(4, scene_4_text, scene_4_prompt, "whip_zoom"),
+            Scene(5, scene_5_text, scene_5_prompt, "pan_right")
         ]
 
-        title = f"The Brutal Truth About {clean_topic.title()}"
         return VideoScript(
             title=title,
             niche=niche_key,
             target_duration=42,
             hook=hook,
             scenes=scenes,
-            cta="Save this video and drop a follow to master your craft.",
-            tags=[f"#{niche_key}", "#shorts", "#viral", "#foryou", "#mindset"]
+            cta=cta,
+            tags=tags
         )
 
 def get_template(niche: str) -> Optional[VideoScript]:
@@ -478,15 +509,19 @@ def get_template(niche: str) -> Optional[VideoScript]:
 
     return None
 
-def create_or_get_script(niche_or_topic: str) -> VideoScript:
+def create_or_get_script(niche_or_topic: str, language: str = "en") -> VideoScript:
     """
-    Unified resolver: Returns pre-built template if found,
-    or dynamically synthesizes a complete viral script for any custom niche/topic.
+    Unified resolver: Returns pre-built template if found and English,
+    or dynamically synthesizes a complete viral script for any custom niche/topic in target language.
     """
     key = niche_or_topic.lower().replace(" ", "_")
-    template = get_template(key)
-    if template:
-        return template
+    lang = (language or "en").lower()
 
-    # Dynamically build a custom viral script
-    return DynamicScriptBuilder.build(topic=niche_or_topic, niche=key)
+    # Pre-built templates are in English; if target language is English, use template if exists
+    if lang == "en":
+        template = get_template(key)
+        if template:
+            return template
+
+    # Dynamically build a custom viral script in target language
+    return DynamicScriptBuilder.build(topic=niche_or_topic, niche=key, language=lang)

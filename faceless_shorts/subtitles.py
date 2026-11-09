@@ -11,7 +11,7 @@ import math
 import os
 import re
 from typing import List, Dict, Optional, Tuple
-from faceless_shorts.config import SUBTITLE_STYLES, CANVAS_WIDTH, CANVAS_HEIGHT
+from faceless_shorts.config import SUBTITLE_STYLES, LANGUAGES, CANVAS_WIDTH, CANVAS_HEIGHT
 from faceless_shorts.tts_engine import WordTimestamp
 
 def format_ass_time(seconds: float) -> str:
@@ -27,11 +27,21 @@ def format_ass_time(seconds: float) -> str:
     return f"{hours}:{minutes:02d}:{secs:02d}.{centisecs:02d}"
 
 class SubtitleGenerator:
-    def __init__(self, style_name: str = "hormozi"):
-        self.style_config = SUBTITLE_STYLES.get(style_name, SUBTITLE_STYLES["hormozi"])
+    def __init__(self, style_name: str = "hormozi", language: str = "en"):
+        self.style_config = SUBTITLE_STYLES.get(style_name, SUBTITLE_STYLES["hormozi"]).copy()
+        self.language = (language or "en").lower()
         self.words_per_screen = self.style_config.get("words_per_screen", 3)
         self.uppercase = self.style_config.get("uppercase", True)
         self.scale_bounce = self.style_config.get("scale_bounce", 118)
+
+        # Dynamic script & font resolution for non-Latin writing systems
+        if self.language in LANGUAGES and self.language != "en":
+            rec_font = LANGUAGES[self.language].get("recommended_font")
+            if rec_font:
+                self.style_config["font_name"] = rec_font
+            # Scripts that don't have uppercase/lowercase concepts
+            if self.language in ["hi", "ja", "ar"]:
+                self.uppercase = False
 
     def generate_ass_script(
         self,

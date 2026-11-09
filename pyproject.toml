@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "faceless-shorts"
+version = "1.0.0"
+authors = [
+  { name = "su6osec", email = "su6osec@users.noreply.github.com" },
+]
+description = "100% Free AI Faceless Video Generator for YouTube Shorts, Instagram Reels, and TikTok."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+    "edge-tts>=7.3.1",
+    "pillow>=10.0.0",
+    "requests>=2.31.0",
+    "rich>=13.7.0",
+    "pyyaml>=6.0.1"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/su6osec/faceless-shorts"
+"Bug Tracker" = "https://github.com/su6osec/faceless-shorts/issues"
+
+[project.scripts]
+faceless-shorts = "faceless_shorts.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["faceless_shorts*"]

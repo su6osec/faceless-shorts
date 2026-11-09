@@ -1,0 +1,47 @@
+{
+  "title": "The Brutal Rule Wealthy People Never Break",
+  "niche": "finance_hustle",
+  "target_duration": 40,
+  "hook": "Poor people trade their time for money. The wealthy buy other people's time.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "Poor people trade their time for money. The wealthy buy other people's time.",
+      "visual_prompt": "luxury modern penthouse office overlooking skyline at night, glowing glass desk, sleek dark billionaire aesthetic, 8k vertical",
+      "motion": "center_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "If you are the only engine generating your income, you are one illness away from absolute zero.",
+      "visual_prompt": "golden mechanical clock gears spinning amidst dark smoke, dramatic luxury lighting, macro vertical shot",
+      "motion": "pan_up"
+    },
+    {
+      "index": 3,
+      "text": "Every single dollar you save should not sit in a bank. It must act as an employee deployed to capture more dollars.",
+      "visual_prompt": "stacks of crisp currency neatly arranged next to glowing stock charts on dark screen, cinematic lighting, 8k vertical",
+      "motion": "center_zoom_out"
+    },
+    {
+      "index": 4,
+      "text": "Build assets that print cash while you sleep, or you will work until the day you die.",
+      "visual_prompt": "golden bullion bars gleaming under focused spotlight in high-security bank vault, hyperrealistic 8k vertical wallpaper",
+      "motion": "subtle_drift"
+    },
+    {
+      "index": 5,
+      "text": "Drop a follow if you choose financial freedom over comfort.",
+      "visual_prompt": "sleek black sports car driving into dark neon futuristic city sunset, cinematic reflections, 8k vertical",
+      "motion": "center_zoom_in"
+    }
+  ],
+  "cta": "Drop a follow if you choose financial freedom over comfort.",
+  "tags": [
+    "#wealthmindset",
+    "#financialfreedom",
+    "#moneyrules",
+    "#investing",
+    "#discipline",
+    "#shorts"
+  ]
+}

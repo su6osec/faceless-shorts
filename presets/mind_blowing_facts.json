@@ -1,0 +1,47 @@
+{
+  "title": "3 Terrifying Space Facts That Keep Scientists Awake",
+  "niche": "mind_blowing_facts",
+  "target_duration": 45,
+  "hook": "There are rogue planets hurtling through pitch-black space right now with no star.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "There are rogue planets hurtling through pitch-black space right now with no star.",
+      "visual_prompt": "lone frozen dark rogue planet wandering through deep interstellar abyss, faint distant starlight, cinematic photorealistic 8k vertical",
+      "motion": "center_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "Billions of these celestial phantoms drift freely, completely undetected until they enter a solar system.",
+      "visual_prompt": "vast majestic galaxy spiral with ominous dark nebulae, cosmic dust clouds, deep space photography 8k vertical wallpaper",
+      "motion": "pan_down"
+    },
+    {
+      "index": 3,
+      "text": "Even stranger, the Boötes Void is a 330 million light-year expanse of almost complete emptiness.",
+      "visual_prompt": "a colossal terrifying cosmic void surrounded by glittering web of galaxies, James Webb style space telescope vertical image",
+      "motion": "center_zoom_out"
+    },
+    {
+      "index": 4,
+      "text": "Scientists still cannot explain why such a massive region of the universe has virtually no galaxies.",
+      "visual_prompt": "futuristic astronaut looking out of spacecraft window into deep dark cosmos, visor reflection of stars, cinematic 8k vertical",
+      "motion": "subtle_drift"
+    },
+    {
+      "index": 5,
+      "text": "If humanity disappeared tomorrow, the universe would not even blink. Which cosmic secret scares you the most?",
+      "visual_prompt": "earth floating in silent infinite darkness, tiny blue dot, cinematic epic NASA style photorealistic vertical shot",
+      "motion": "center_zoom_in"
+    }
+  ],
+  "cta": "Which cosmic secret scares you the most?",
+  "tags": [
+    "#spacefacts",
+    "#universe",
+    "#cosmicmystery",
+    "#astronomy",
+    "#didyouknow",
+    "#shorts"
+  ]
+}

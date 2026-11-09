@@ -1,0 +1,46 @@
+{
+  "title": "The Creepiest Incident In Naval History",
+  "niche": "horror_mystery",
+  "target_duration": 45,
+  "hook": "In 1947, ships across the Straits of Malacca picked up a chilling Morse code SOS.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "In 1947, ships across the Straits of Malacca picked up a chilling Morse code SOS.",
+      "visual_prompt": "vintage 1940s naval radio operator listening in dimly lit radio room, static green glow, cinematic dark horror aesthetic, 8k vertical",
+      "motion": "center_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "The message simply read: All officers including captain are dead. I die.",
+      "visual_prompt": "vintage typewriter printing eerie morse code on aged parchment, macro shallow depth of field, dramatic dark shadows, 8k vertical",
+      "motion": "pan_down"
+    },
+    {
+      "index": 3,
+      "text": "When rescue teams boarded the SS Ourang Medan, they found the entire crew deceased, eyes wide open, staring at the sky.",
+      "visual_prompt": "ghost ship floating in silent eerie foggy ocean under moonlight, cold blue mist, chilling cinematic thriller composition, 8k vertical",
+      "motion": "center_zoom_out"
+    },
+    {
+      "index": 4,
+      "text": "There was not a single scratch or sign of violence on any body.",
+      "visual_prompt": "creepy abandoned ship bridge with wheel spinning slowly in wind, flickering emergency lights, 8k vertical masterpiece",
+      "motion": "subtle_drift"
+    },
+    {
+      "index": 5,
+      "text": "Before investigators could search the lower deck, an unexplained fire forced them off, and the vessel sank forever.",
+      "visual_prompt": "burning silhouette of an old cargo ship sinking into stormy dark waves, fiery orange sparks, epic atmospheric lighting, 8k vertical",
+      "motion": "center_zoom_in"
+    }
+  ],
+  "cta": "What do you think killed the crew?",
+  "tags": [
+    "#unsolvedmystery",
+    "#ghostship",
+    "#truehorror",
+    "#creepyfacts",
+    "#shorts"
+  ]
+}

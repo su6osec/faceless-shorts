@@ -1,0 +1,47 @@
+{
+  "title": "Marcus Aurelius' Rule To Never Get Angry",
+  "niche": "stoicism",
+  "target_duration": 40,
+  "hook": "Whenever you are offended by someone's lack of respect, ask yourself this one question.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "Whenever you are offended by someone's lack of respect, ask yourself this one question.",
+      "visual_prompt": "majestic roman emperor marcus aurelius marble bust, cinematic moody lighting, ancient pillars and storm clouds, 8k vertical masterpiece",
+      "motion": "center_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "Is it possible for shameless people not to exist in this world? Absolutely not.",
+      "visual_prompt": "ancient roman colosseum during turbulent thunderstorm, dramatic cinematic lighting, hyperrealistic vertical composition",
+      "motion": "pan_up"
+    },
+    {
+      "index": 3,
+      "text": "So why do you expect the impossible? You have encountered one of those inevitable fools.",
+      "visual_prompt": "lone stoic warrior standing on a mountain cliff, violent wind, calm face, dramatic sunset lighting, photorealistic vertical",
+      "motion": "center_zoom_out"
+    },
+    {
+      "index": 4,
+      "text": "You cannot control the storm outside, but you have absolute power over your inner stillness.",
+      "visual_prompt": "calm glowing bonsai tree inside a raging glass sphere amidst tempest, surreal hyperrealistic lighting, 8k vertical",
+      "motion": "subtle_drift"
+    },
+    {
+      "index": 5,
+      "text": "Do not hand over the steering wheel of your emotions to people who cannot even control themselves.",
+      "visual_prompt": "bronze ancient compass resting on old leather map, golden warm cinematic glow, photorealistic vertical macro shot",
+      "motion": "center_zoom_in"
+    }
+  ],
+  "cta": "Subscribe to master your mind.",
+  "tags": [
+    "#stoicism",
+    "#marcusaurelius",
+    "#philosophy",
+    "#mindset",
+    "#discipline",
+    "#shorts"
+  ]
+}

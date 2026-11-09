@@ -1,0 +1,52 @@
+{
+  "title": "3 Dark Psychology Tricks People Use On You",
+  "niche": "dark_psychology",
+  "target_duration": 45,
+  "hook": "If someone stares at your forehead while you speak, they are doing this on purpose.",
+  "scenes": [
+    {
+      "index": 1,
+      "text": "If someone stares at your forehead while you speak, they are doing this on purpose.",
+      "visual_prompt": "cinematic close up of mysterious shadowy eyes in dark room, intense gaze, dramatic rim lighting, photorealistic 8k vertical wallpaper",
+      "motion": "center_zoom_in"
+    },
+    {
+      "index": 2,
+      "text": "It makes you feel deeply insecure and completely shatters your train of thought.",
+      "visual_prompt": "silhouette of a stressed person holding their head in hands, dark moody neon lighting, psychological thriller atmosphere, vertical composition",
+      "motion": "pan_down"
+    },
+    {
+      "index": 3,
+      "text": "Second is the silent pause. When they want you to over-explain a lie, they simply stay quiet and keep looking at you.",
+      "visual_prompt": "two shadowy figures across an interrogation table, dramatic smoky lighting, cinema noir style, ultra sharp 8k vertical",
+      "motion": "center_zoom_out"
+    },
+    {
+      "index": 4,
+      "text": "Humans naturally hate silence, so they rush to fill the gap with confessions.",
+      "visual_prompt": "hourglass with glowing dark sand running out, ominous clockwork background, macro photorealistic vertical shot",
+      "motion": "center_zoom_in"
+    },
+    {
+      "index": 5,
+      "text": "And the most dangerous one? Artificial scarcity of affection. They pull away to make you obsess.",
+      "visual_prompt": "a golden glowing marionette puppet with severed strings in dark void, mystical hyperrealistic lighting, 8k vertical wallpaper",
+      "motion": "subtle_drift"
+    },
+    {
+      "index": 6,
+      "text": "Remember, aware minds are impossible to control. Drop a follow if you refuse to be manipulated.",
+      "visual_prompt": "ancient glowing marble statue of stoic philosopher, dark stormy lightning background, cinematic epic lighting, 8k vertical",
+      "motion": "center_zoom_in"
+    }
+  ],
+  "cta": "Drop a follow if you refuse to be manipulated.",
+  "tags": [
+    "#darkpsychology",
+    "#mindtricks",
+    "#psychologyfacts",
+    "#manipulation",
+    "#shorts"
+  ]
+}

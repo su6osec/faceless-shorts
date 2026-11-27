@@ -122,4 +122,4 @@ faceless-shorts transcribe clip.mp4 --language en   # local Whisper SRT
 ```
 
 ### Step 5: Present Companion Metadata Pack
-After rendering, report the video path and the viral metadata (`output/*_metadata.json`): YouTube Title/Description/Timestamps/Hashtags, TikTok Caption, Instagram Reels Caption.
+After rendering, report the video path and the viral metadata (`output/*_metadata.json`): YouTube Title/Description/Hashtags, TikTok Caption, Instagram Reels Caption. Ghost, horror and other scary-story scripts get story wording; set `FACELESS_HANDLE` to add a "Follow @handle" line to the Instagram caption.

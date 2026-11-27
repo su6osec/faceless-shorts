@@ -17,9 +17,9 @@ from faceless_shorts.tts_engine import WordTimestamp
 HAS_FFMPEG = bool(shutil.which("ffmpeg"))
 
 
-def run_ffmpeg(args, timeout=60):
+def run_ffmpeg(args, timeout=60, cwd=None):
     cmd = ["ffmpeg", "-hide_banner", "-v", "error", "-y", *args]
-    return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=cwd)
 
 
 @unittest.skipUnless(HAS_FFMPEG, "ffmpeg not installed")
@@ -136,8 +136,10 @@ class TestSubtitleStyles(unittest.TestCase):
                     words=words, output_ass_path=ass)
                 self.assertTrue(os.path.exists(ass), f"{key}: ASS file not written")
                 out = os.path.join(tmp, f"{key}.mp4")
-                res = run_ffmpeg(["-i", bg, "-vf", f"ass={ass}", "-c:v", "libx264",
-                                  "-preset", "ultrafast", out])
+                # Relative name, run from tmp: a filter option can't take a raw
+                # Windows path ("C:\..." splits at ":" and loses its "\").
+                res = run_ffmpeg(["-i", bg, "-vf", f"ass={key}.ass", "-c:v", "libx264",
+                                  "-preset", "ultrafast", out], cwd=tmp)
                 if res.returncode != 0:
                     failures.append(f"{key}: {res.stderr.strip()[:300]}")
             self.assertEqual(failures, [], "Broken subtitle styles:\n" + "\n".join(failures))

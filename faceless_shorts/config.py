@@ -410,15 +410,15 @@ PROGRESS_BAR_CONFIG = {
         "hormozi": "0x2BF7FF@0.95",        # Cyan on yellow
         "beast_pop": "0x00FF00@0.95",      # Neon lime
         "neon_cyberpunk": "0xFF00FF@0.95", # Electric magenta
-        "crimson_alert": "0x2222FF@0.95",  # Deep crimson red
-        "sketch_comic": "0x00D4FF@0.95",   # Amber gold
-        "minimalist_gold": "0x50C8E8@0.95",# Champagne gold
+        "crimson_alert": "0xFF2222@0.95",  # Deep crimson red
+        "sketch_comic": "0xFFD400@0.95",   # Amber gold
+        "minimalist_gold": "0xE8C850@0.95",# Champagne gold
         "neon_glow": "0x00FFFF@0.95",      # Pure neon cyan
         "chalk_classic": "0xFFE9B3@0.95",  # Chalk yellow
         "retro_pop": "0xFF66CC@0.95",      # Hot pink
         "pixel_arcade": "0x40FF00@0.95",   # Phosphor green
-        "luxury_cinema": "0x7AC8E8@0.95",  # Champagne gold
-        "horror_bleed": "0x3333FF@0.95",   # Blood red
+        "luxury_cinema": "0xE8C87A@0.95",  # Champagne gold
+        "horror_bleed": "0xFF3333@0.95",   # Blood red
         "glow_blur": "0x00FFFF@0.95"       # Glow neon cyan
     }
 }

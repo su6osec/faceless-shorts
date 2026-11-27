@@ -11,6 +11,7 @@ import sys
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
+from rich.text import Text
 
 from faceless_shorts.config import (
     VOICES,
@@ -414,12 +415,21 @@ def run_doctor():
 
     console.print(table)
 
+# Output extension -> whisper filter format.
+TRANSCRIBE_FORMATS = {".srt": "srt", ".txt": "text", ".json": "json"}
+
 def run_transcribe(args):
     """Local Whisper transcription via FFmpeg's built-in whisper.cpp filter."""
     from faceless_shorts.integrations import WhisperTranscriber
 
     if not os.path.exists(args.input):
         console.print(f"[red]File not found: {args.input}[/red]")
+        sys.exit(1)
+
+    out_path = args.output or os.path.splitext(args.input)[0] + ".srt"
+    fmt = TRANSCRIBE_FORMATS.get(os.path.splitext(out_path)[1].lower())
+    if fmt is None:
+        console.print(f"[red]Unsupported output type: {out_path} (use .srt, .txt or .json)[/red]")
         sys.exit(1)
 
     transcriber = WhisperTranscriber()
@@ -429,33 +439,43 @@ def run_transcribe(args):
         sys.exit(1)
 
     console.print(f"[cyan]Ensuring local Whisper model ({args.model}) is cached...[/cyan]")
-    model_path = transcriber.ensure_model(language=args.language)
+    model_path = transcriber.ensure_model(language=args.language, model_size=args.model)
     if not model_path:
         console.print("[red]Could not download Whisper model (network offline?).[/red]")
         sys.exit(1)
 
     console.print(f"[cyan]Transcribing {args.input} with local Whisper ({args.model}, lang={args.language})...[/cyan]")
-    fmt = "srt" if (args.output or "").endswith(".srt") else "json"
     result = transcriber.transcribe(
         media_path=args.input,
         language=args.language,
         out_format=fmt,
         model_size=args.model,
+        timeout=None,  # an explicit user command: long videos may take a while
     )
     if result is None:
         console.print("[red]Transcription failed.[/red]")
         sys.exit(1)
 
-    out_path = args.output or os.path.splitext(args.input)[0] + f".{fmt}"
+    text = json.dumps(result, indent=2, ensure_ascii=False) if fmt == "json" else result
     with open(out_path, "w", encoding="utf-8") as f:
-        if fmt == "json":
-            json.dump(result, f, indent=2, ensure_ascii=False)
-        else:
-            f.write(str(result))
+        f.write(text)
     console.print(f"[green]✓ Transcription saved to {os.path.abspath(out_path)}[/green]")
-    console.print(Panel(str(result)[:1500], title="Transcript Preview", border_style="green"))
+    # Text(): transcripts contain "[MUSIC PLAYING]"-style tags rich would eat as markup.
+    console.print(Panel(Text(text[:1500]), title="Transcript Preview", border_style="green"))
+
+def _utf8_redirected_output():
+    """Windows gives redirected stdout/stderr the ANSI code page (cp1252), so
+    printing "✓" or a transcript's non-Latin text raises UnicodeEncodeError
+    after the work is done. A real console is already UTF-8."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            if (getattr(stream, "encoding", "") or "").lower() not in ("utf-8", "utf8"):
+                stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError, OSError):
+            pass
 
 def main():
+    _utf8_redirected_output()
     parser = argparse.ArgumentParser(
         description="Faceless Shorts: 100% Free AI Faceless Video Generator for YouTube Shorts, Reels, and TikTok."
     )
@@ -503,9 +523,9 @@ def main():
     # transcribe command (local Whisper via FFmpeg)
     tr_parser = subparsers.add_parser("transcribe", help="Transcribe any audio/video to SRT using local Whisper (FFmpeg built-in, 100%% offline)")
     tr_parser.add_argument("input", type=str, help="Path to audio/video file")
-    tr_parser.add_argument("--language", type=str, default="en", help="Language code (en, hi, es, ...)")
-    tr_parser.add_argument("--model", type=str, default="base", choices=["tiny", "base", "small", "medium", "large"], help="Whisper model size")
-    tr_parser.add_argument("-o", "--output", type=str, help="Output subtitle file path (.srt/.json/.txt)")
+    tr_parser.add_argument("--language", type=str, default="en", help="Language code (en, hi, es, ...; default en). 'auto' detects it from the opening speech, but accents can fool it, so pass the code when you know it")
+    tr_parser.add_argument("--model", type=str, default="base", choices=["tiny", "base", "small", "medium", "large"], help="Whisper model size ('large' = large-v3)")
+    tr_parser.add_argument("-o", "--output", type=str, help="Output file path: .srt (default), .txt or .json")
 
     args = parser.parse_args()
 

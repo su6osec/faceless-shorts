@@ -9,7 +9,9 @@ import math
 import os
 import random
 import subprocess
+import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -25,6 +27,28 @@ from faceless_shorts.config import (
 )
 from faceless_shorts.style_processor import StyleProcessor
 from faceless_shorts.vfx.theatre_easing import get_theatre_motion_expr
+
+# The keyless Pollinations tier serves 1 image per 45 s *per IP*; anything
+# faster is answered with HTTP 402 (FREE_LIMIT, or 429/503) plus Retry-After.
+# Requests are serialized process-wide and spaced by this gap. Other processes
+# on the same IP (parallel renders) share the quota, so rate-limit replies are
+# retried until a per-image time budget runs out rather than a fixed count.
+# Lower the gap via FACELESS_POLLINATIONS_GAP if your tier allows more.
+POLLINATIONS_GAP_SECONDS = float(os.environ.get("FACELESS_POLLINATIONS_GAP", "45"))
+POLLINATIONS_BUDGET_SECONDS = float(os.environ.get("FACELESS_POLLINATIONS_BUDGET", "600"))
+POLLINATIONS_MAX_ERRORS = 3  # non-rate-limit failures (timeouts, bad images, 5xx)
+POLLINATIONS_MAX_WAIT_SECONDS = 120.0
+POLLINATIONS_RATE_LIMIT_CODES = (402, 429, 503)
+_pollinations_lock = threading.Lock()
+_pollinations_last_request = 0.0  # time.monotonic() when the last request finished, 0 = none yet
+
+
+def _retry_after_seconds(header_value: Optional[str]) -> float:
+    try:
+        return max(0.0, float(header_value))
+    except (TypeError, ValueError):
+        return POLLINATIONS_GAP_SECONDS
+
 
 class VisualManager:
     def __init__(
@@ -92,30 +116,67 @@ class VisualManager:
                 print(f"    [!] ComfyUI engine failed ({e}), falling back to Pollinations Flux.")
 
         if self.engine != "procedural":
-            style_config = ART_STYLES.get(self.art_style, ART_STYLES["hyperreal"])
             url = self._pollinations_url(prompt, model, chosen_seed)
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-            }
-            max_retries = 3
-            for attempt in range(max_retries):
+            if self._fetch_pollinations(url, output_path):
+                return output_path
+
+        return self.generate_procedural_background(output_path, prompt)
+
+    def _fetch_pollinations(self, url: str, output_path: str) -> bool:
+        """Download one Pollinations image within the free tier's rate limit.
+
+        Serialized across threads, spaced by POLLINATIONS_GAP_SECONDS, and
+        honours Retry-After on 402/429/503. Returns False after the last
+        failed attempt so the caller can fall back to a procedural canvas.
+        """
+        global _pollinations_last_request
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+        }
+        last_error: Optional[Exception] = None
+        errors = 0
+        deadline = time.monotonic() + POLLINATIONS_BUDGET_SECONDS
+        with _pollinations_lock:
+            while True:
+                if _pollinations_last_request:
+                    wait = POLLINATIONS_GAP_SECONDS - (time.monotonic() - _pollinations_last_request)
+                    if wait > 0:
+                        time.sleep(wait)
                 try:
                     req = urllib.request.Request(url, headers=headers)
-                    with urllib.request.urlopen(req, timeout=35) as response:
-                        with open(output_path, "wb") as f:
-                            f.write(response.read())
-
+                    try:
+                        with urllib.request.urlopen(req, timeout=90) as response:
+                            data = response.read()
+                    finally:
+                        # The server counts its window from when the last image finished.
+                        _pollinations_last_request = time.monotonic()
+                    with open(output_path, "wb") as f:
+                        f.write(data)
                     # Validate image file integrity
                     with Image.open(output_path) as img:
                         img.verify()
-
-                    return output_path
+                    return True
+                except urllib.error.HTTPError as e:
+                    last_error = e
+                    if e.code in POLLINATIONS_RATE_LIMIT_CODES:
+                        # Jitter so parallel renders on one IP don't retry in lockstep.
+                        delay = min(_retry_after_seconds(e.headers.get("Retry-After"))
+                                    + 2 + random.uniform(0, 4), POLLINATIONS_MAX_WAIT_SECONDS)
+                    else:
+                        errors += 1
+                        delay = 5.0
                 except Exception as e:
-                    time.sleep(2)
-                    if attempt == max_retries - 1:
-                        print(f"    [!] Warning: Visual generation failed ({e}). Using sleek procedural canvas.")
-
-        return self.generate_procedural_background(output_path, prompt)
+                    last_error = e
+                    errors += 1
+                    delay = 5.0
+                if errors >= POLLINATIONS_MAX_ERRORS or time.monotonic() + delay > deadline:
+                    break
+                print(f"    [~] Pollinations busy ({last_error}); retrying in {delay:.0f}s")
+                time.sleep(delay)
+                # The server told us when to come back; don't add the pacing gap on top.
+                _pollinations_last_request = time.monotonic() - POLLINATIONS_GAP_SECONDS
+        print(f"    [!] Warning: Visual generation failed ({last_error}). Using sleek procedural canvas.")
+        return False
 
     def generate_ai_images_parallel(
         self,
@@ -135,6 +196,14 @@ class VisualManager:
                 return {job["output_path"]: self.generate_procedural_background(
                     output_path=job["output_path"], topic=job.get("prompt", ""))}
 
+        if self.engine == "pollinations":
+            # Requests are rate-limited and serialized anyway; one worker keeps
+            # them in scene order. (ComfyUI keeps its parallel workers.)
+            max_workers = 1
+            if len(jobs) > 1:
+                minutes = (len(jobs) - 1) * POLLINATIONS_GAP_SECONDS / 60
+                print(f"    [~] Pollinations free tier: one image every ~{POLLINATIONS_GAP_SECONDS:.0f}s "
+                      f"(about {minutes:.1f} min for {len(jobs)} images)")
         results: Dict[str, str] = {}
         with ThreadPoolExecutor(max_workers=max_workers) as pool:
             for partial in pool.map(_one, jobs):

@@ -455,7 +455,12 @@ class VideoRenderer:
             height=self.height,
         )
 
-        burn_filters = [f"ass={ass_path}"]
+        # Windows fix: FFmpeg's filter parser treats "\" as an escape and ":" as
+        # an option separator, so use forward slashes and escape drive colons.
+        ass_filter_path = ass_path.replace("\\", "/").replace(":", "\\\\:")
+        # Normalize to broadcast-standard limited range (TV) before encoding so
+        # platforms never mis-read full-range (yuvj420p) luma.
+        tail_filters = "scale=out_range=tv,format=yuv420p"
         if self.progress_bar:
             bar_color = PROGRESS_BAR_CONFIG["colors_by_style"].get(
                 self.subtitle_style,
@@ -463,16 +468,17 @@ class VideoRenderer:
             )
             bar_h = PROGRESS_BAR_CONFIG["height"]
             y_pos = self.height - bar_h - 4
-            burn_filters.append(
-                f"drawbox=x=0:y={y_pos}:w='iw*(t/{total_duration:.3f})':h={bar_h}:color={bar_color}:t=fill"
+            # Fix: drawbox's `t` is box thickness, not time (FFmpeg 9 rejects the
+            # old expression). Slide a full-width bar in with overlay, whose `t`
+            # is the frame timestamp: x goes from -W at t=0 to 0 at the end.
+            filter_complex = (
+                f"{fx_body};[fx]ass={ass_filter_path}[subs];"
+                f"color=c={bar_color}:s={self.width}x{bar_h}:r={self.fps}[bar];"
+                f"[subs][bar]overlay=x='-w+W*t/{total_duration:.3f}':y={y_pos}:shortest=1,"
+                f"{tail_filters}[vout]"
             )
-        # Normalize to broadcast-standard limited range (TV) before encoding so
-        # platforms never mis-read full-range (yuvj420p) luma.
-        burn_filters.append("scale=out_range=tv")
-        burn_filters.append("format=yuv420p")
-        video_filters = ",".join(burn_filters)
-
-        filter_complex = f"{fx_body};[fx]{video_filters}[vout]"
+        else:
+            filter_complex = f"{fx_body};[fx]ass={ass_filter_path},{tail_filters}[vout]"
 
         final_cmd = [
             "ffmpeg", "-y",

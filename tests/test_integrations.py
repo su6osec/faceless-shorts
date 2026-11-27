@@ -163,6 +163,198 @@ class WhisperTranscriberTests(unittest.TestCase):
             download.assert_not_called()
             self.assertFalse(os.path.exists(cached + ".part"))
 
+    def test_ensure_model_honours_requested_size_over_env(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cached = os.path.join(tmp, "ggml-small.bin")
+            with open(cached, "wb") as handle:
+                handle.write(b"fake-model-bytes")
+            with clean_env():
+                os.environ["FACELESS_MODELS_DIR"] = tmp
+                os.environ["FACELESS_WHISPER_MODEL"] = "tiny"
+                with mock.patch.object(integrations, "_download") as download:
+                    result = WhisperTranscriber.ensure_model("auto", model_size="small")
+            self.assertEqual(result, cached)
+            download.assert_not_called()
+
+    def test_ensure_model_reuses_cached_multilingual_model_for_english(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cached = os.path.join(tmp, "ggml-small.bin")
+            with open(cached, "wb") as handle:
+                handle.write(b"fake-model-bytes")
+            with clean_env():
+                os.environ["FACELESS_MODELS_DIR"] = tmp
+                with mock.patch.object(integrations, "_download") as download:
+                    self.assertEqual(WhisperTranscriber.ensure_model("en", model_size="small"), cached)
+                    download.assert_not_called()
+                    # ...but never the reverse: Swahili can't use an English-only model.
+                    os.rename(cached, os.path.join(tmp, "ggml-small.en.bin"))
+                    WhisperTranscriber.ensure_model("sw", model_size="small")
+                    self.assertTrue(download.call_args[0][0].endswith("/ggml-small.bin"))
+
+    def test_model_filename_language_rules(self):
+        name = WhisperTranscriber._model_filename
+        self.assertEqual(name("base", "en"), "ggml-base.en.bin")
+        self.assertEqual(name("base", "en-US"), "ggml-base.en.bin")
+        for language in ("auto", None, "", "sn", "hi"):
+            with self.subTest(language=language):
+                self.assertEqual(name("base", language), "ggml-base.bin")
+        # whisper.cpp ships no "ggml-large.bin" and no English-only large model.
+        self.assertEqual(name("large", "en"), "ggml-large-v3.bin")
+        self.assertEqual(name("large", "auto"), "ggml-large-v3.bin")
+
+    def test_find_model_never_uses_english_only_model_for_other_languages(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            english_only = os.path.join(tmp, "ggml-base.en.bin")
+            with open(english_only, "wb") as handle:
+                handle.write(b"fake-model-bytes")
+            with clean_env():
+                os.environ["FACELESS_MODELS_DIR"] = tmp
+                self.assertEqual(WhisperTranscriber._find_model("base", "en"), english_only)
+                self.assertIsNone(WhisperTranscriber._find_model("base", "auto"))
+                self.assertIsNone(WhisperTranscriber._find_model("base", None))
+                multilingual = os.path.join(tmp, "ggml-base.bin")
+                with open(multilingual, "wb") as handle:
+                    handle.write(b"fake-model-bytes")
+                self.assertEqual(WhisperTranscriber._find_model("base", "auto"), multilingual)
+
+    @unittest.skipUnless(shutil.which("ffmpeg"), "ffmpeg not installed")
+    def test_filter_value_escaping_survives_ffmpeg_parsing(self):
+        # ametadata's file= option takes a path, so ffmpeg itself proves the
+        # escaping: the file only appears if the path arrived intact. The temp
+        # dir supplies "C:\..." on Windows; POSIX also gets a literal ":" and "\".
+        name = "it's [a],b;c.txt" if os.name == "nt" else "it's [a],b;c:d\\e.txt"
+        with tempfile.TemporaryDirectory(prefix="fs esc ") as tmp:
+            target = os.path.join(tmp, name)
+            proc = subprocess.run(
+                [
+                    shutil.which("ffmpeg"), "-hide_banner", "-loglevel", "error",
+                    "-f", "lavfi", "-i", "anullsrc", "-t", "0.1",
+                    "-af", "ametadata=mode=print:file=" + integrations._ffmpeg_filter_value(target),
+                    "-f", "null", "-",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertTrue(os.path.exists(target), f"ffmpeg mangled {target!r}")
+
+    def test_parse_whisper_json_handles_unescaped_quotes(self):
+        # Verbatim shape of FFmpeg 9.1 whisper output: JSON Lines, quotes in
+        # "text" left unescaped (the second line is not valid JSON).
+        payload = (
+            '{"start":0,"end":2960,"text":"So guys I\'m going to tell a story","language":"en"}\n'
+            '{"start":2994,"end":7760,"text":"asking, "Why is this person back?"","language":"en"}\n'
+            "\n"
+        )
+        self.assertEqual(
+            integrations._parse_whisper_json(payload),
+            [
+                {"start": 0, "end": 2960, "text": "So guys I'm going to tell a story", "language": "en"},
+                {"start": 2994, "end": 7760, "text": 'asking, "Why is this person back?"', "language": "en"},
+            ],
+        )
+        self.assertIsNone(integrations._parse_whisper_json("not json\n"))
+
+    def _run_fake_transcribe(self, out_format, payload, **kwargs):
+        """Run transcribe() with ffmpeg mocked to write *payload*; return
+        (result, ffmpeg argv, subprocess.run kwargs, model path, destination path)."""
+        calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            media = os.path.join(tmp, "clip.mp4")
+            with open(media, "wb") as handle:
+                handle.write(b"not a real video")
+            model = os.path.join(tmp, "models", "ggml-base.bin")
+            destination = os.path.join(tmp, f"faceless_whisper_fixed.{out_format}")
+
+            def fake_run(cmd, **run_kwargs):
+                calls.append((cmd, run_kwargs))
+                with open(destination, "w", encoding="utf-8") as handle:
+                    handle.write(payload)
+                return subprocess.CompletedProcess(cmd, 0, "", "")
+
+            with mock.patch.object(WhisperTranscriber, "available", return_value=True), \
+                    mock.patch.object(WhisperTranscriber, "_find_model", return_value=model), \
+                    mock.patch.object(integrations, "_ffmpeg_path", return_value="ffmpeg"), \
+                    mock.patch.object(integrations.tempfile, "gettempdir", return_value=tmp), \
+                    mock.patch.object(integrations.uuid, "uuid4", return_value=mock.Mock(hex="fixed")), \
+                    mock.patch.object(integrations.subprocess, "run", side_effect=fake_run):
+                result = WhisperTranscriber.transcribe(media, out_format=out_format, **kwargs)
+            self.assertEqual(len(calls), 1)
+            self.assertFalse(os.path.exists(destination), "temp output must be cleaned up")
+            cmd, run_kwargs = calls[0]
+            return result, cmd, run_kwargs, model, destination
+
+    def test_transcribe_escapes_paths_and_parses_json_lines(self):
+        payload = '{"start":0,"end":1500,"text":"He said "hi"","language":"en"}\n'
+        result, cmd, run_kwargs, model, destination = self._run_fake_transcribe(
+            "json", payload, language="auto", timeout=None
+        )
+        self.assertEqual(result, [{"start": 0, "end": 1500, "text": 'He said "hi"', "language": "en"}])
+        filter_expr = cmd[cmd.index("-af") + 1]
+        self.assertIn("model=" + integrations._ffmpeg_filter_value(model), filter_expr)
+        self.assertIn("destination=" + integrations._ffmpeg_filter_value(destination), filter_expr)
+        # FFmpeg's "auto" re-detects per chunk; ours must detect once ("lock").
+        self.assertIn(":language=lock", filter_expr)
+        self.assertIsNone(run_kwargs["timeout"])
+
+    def test_transcribe_hands_whisper_long_passes(self):
+        # Short queues cut words blindly every few seconds; whisper.cpp needs
+        # whole stretches of audio to place its own cuts at sentence ends.
+        _, cmd, _, _, _ = self._run_fake_transcribe("text", "hi\n")
+        self.assertIn(f":queue={integrations.WHISPER_QUEUE_SECONDS}:", cmd[cmd.index("-af") + 1])
+        self.assertGreaterEqual(integrations.WHISPER_QUEUE_SECONDS, 600)
+        self.assertNotIn("vad_", cmd[cmd.index("-af") + 1])
+
+    def test_transcribe_language_mapping(self):
+        for language, expected in ((None, "lock"), ("auto", "lock"), ("AUTO", "lock"),
+                                   ("eval", "eval"), ("en", "en"), ("sw", "sw")):
+            with self.subTest(language=language):
+                _, cmd, _, _, _ = self._run_fake_transcribe("text", "hi\n", language=language)
+                self.assertTrue(cmd[cmd.index("-af") + 1].endswith(f":language={expected}"))
+
+    def test_transcribe_srt_renumbers_cues_from_one(self):
+        # FFmpeg 9.1 numbers SRT cues from 0.
+        payload = "0\n00:00:00,000 --> 00:00:01,500\nHello\n\n1\n00:00:01,500 --> 00:00:03,000\nWorld\n\n"
+        result, _, run_kwargs, _, _ = self._run_fake_transcribe("srt", payload)
+        self.assertEqual(
+            result,
+            "1\n00:00:00,000 --> 00:00:01,500\nHello\n\n2\n00:00:01,500 --> 00:00:03,000\nWorld\n\n",
+        )
+        self.assertEqual(run_kwargs["timeout"], integrations.TRANSCRIBE_TIMEOUT)
+
+    def test_clean_srt_folds_repetition_loops(self):
+        # Verbatim loop from a real FFmpeg 9.1 run (small model), CRLF endings.
+        payload = (
+            "53\r\n00:03:41,915 --> 00:03:43,915\r\nbut they just flushed it off.\r\n\r\n"
+            "54\r\n00:03:43,915 --> 00:03:45,915\r\nThey just flushed it off.\r\n\r\n"
+            "55\r\n00:03:45,915 --> 00:03:47,915\r\nThey just flushed it off.\r\n\r\n"
+            "56\r\n00:03:47,915 --> 00:03:49,915\r\nthey just flushed it off\r\n\r\n"
+            "57\r\n00:03:49,915 --> 00:03:51,915\r\nSo now, this woman peeped\r\non the window\r\n\r\n"
+            "58\r\n00:03:51,915 --> 00:03:53,915\r\n\r\n"
+        )
+        self.assertEqual(
+            integrations._clean_srt(payload),
+            "1\n00:03:41,915 --> 00:03:43,915\nbut they just flushed it off.\n\n"
+            "2\n00:03:43,915 --> 00:03:49,915\nThey just flushed it off.\n\n"
+            "3\n00:03:49,915 --> 00:03:51,915\nSo now, this woman peeped\non the window\n\n",
+        )
+        self.assertEqual(integrations._clean_srt("no cues here\n"), "no cues here\n")
+
+    def test_transcribe_json_and_text_fold_repetition_loops(self):
+        payload = (
+            '{"start":0,"end":2000,"text":"The yard was also cleaned.","language":"en"}\n'
+            '{"start":2000,"end":4000,"text":" the yard was also cleaned","language":"en"}\n'
+            '{"start":4000,"end":6000,"text":"Everything was cleaned outside.","language":"en"}\n'
+        )
+        result, _, _, _, _ = self._run_fake_transcribe("json", payload)
+        self.assertEqual(result, [
+            {"start": 0, "end": 4000, "text": "The yard was also cleaned.", "language": "en"},
+            {"start": 4000, "end": 6000, "text": "Everything was cleaned outside.", "language": "en"},
+        ])
+        text, _, _, _, _ = self._run_fake_transcribe("text", "Hi there.\nhi there\n\nBye.\nHi there.\n")
+        self.assertEqual(text, "Hi there.\n\nBye.\nHi there.\n")
+
 
 class ComfyUIClientTests(unittest.TestCase):
     def test_available_false_fast_when_nothing_listens(self):
